@@ -23,12 +23,12 @@ class ValidatorTest {
     @BeforeAll
     public static void setUp() {
         //films set up values
-        correctFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), 190);
-        futureFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.now().plusDays(20), 190);
-        pastFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1895, 12, 27), 190);
-        emptyNameFilm = new Film(1, 4, "", "RUN FOREST", LocalDate.of(1990, 9, 28), 190);
-        over200SymbolsFilm = new Film(1, 4, "Forest", over200SymbolsString, LocalDate.of(1990, 9, 28), 190);
-        negativeDurationFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), -1);
+        correctFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4);
+        futureFilm = new Film("Forest", "RUN FOREST", LocalDate.now().plusDays(20), 190, 1, 4);
+        pastFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1895, 12, 20), 190, 1, 4);
+        emptyNameFilm = new Film("", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4);
+        over200SymbolsFilm = new Film("Forest", over200SymbolsString, LocalDate.of(1990, 9, 28), 190, 1, 4);
+        negativeDurationFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), -1, 1, 4);
 
         //users set up values
         correctUser = new User(1, "mr-white@yandex.ru", "mr-white", "MrWhite", LocalDate.of(2000, 9, 29));
