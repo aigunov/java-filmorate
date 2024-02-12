@@ -22,7 +22,7 @@ public class UserController {
      * @return list of all users
      */
     @GetMapping
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         log.info("Client get list of all users");
         return new ArrayList<>(users.values());
     }
@@ -34,14 +34,14 @@ public class UserController {
      */
     @PostMapping
     public User addUser(@RequestBody User user) throws ValidationException {
-        try{
+        try {
             makeUserLoginAlsoName(user);
             Validator.userValidation(user);
             int userId = generatorId();
             user.setId(userId);
             users.put(userId, user);
             log.info("New user has just added {}", user);
-        }catch (ValidationException exception){
+        } catch (ValidationException exception) {
             throw exception;
         }
         return user;
@@ -53,16 +53,16 @@ public class UserController {
      * @throws ValidationException if the user's values are invalid
      */
     @PutMapping
-    public User updateUser(@RequestBody User user) throws ValidationException{
-        try{
+    public User updateUser(@RequestBody User user) throws ValidationException {
+        try {
             Validator.userValidation(user);
-            if(users.keySet().contains(user.getId())){
+            if (users.keySet().contains(user.getId())) {
                 users.put(user.getId(), user);
                 log.info("User's info has just updated {}", user);
-            }else{
+            } else {
                 throw new NoSuchElementException("This user not exist to update");
             }
-        }catch(ValidationException exception){
+        } catch (ValidationException exception) {
             throw exception;
         }
         return user;
@@ -71,16 +71,17 @@ public class UserController {
     /**
      * @return generated id for new user
      */
-    private int generatorId(){
+    private int generatorId() {
         return ++generatedId;
     }
 
     /**
      * sets the login as a username if the username is empty
+     *
      * @param user is object to check if field username if empty
      */
-    private void makeUserLoginAlsoName(User user){
-        if(user.getName() == null){
+    private void makeUserLoginAlsoName(User user) {
+        if (user.getName() == null) {
             user.setName(user.getLogin());
         }
     }

@@ -57,7 +57,7 @@ public class FilmController {
             Validator.filmValidation(film);
             if (films.keySet().contains(film.getId())) {
                 films.put(film.getId(), film);
-            }else {
+            } else {
                 throw new NoSuchElementException("This film not exist to update");
             }
             log.info("Film has just updated {}", film);
