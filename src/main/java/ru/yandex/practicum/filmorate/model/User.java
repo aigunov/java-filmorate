@@ -5,17 +5,18 @@ import lombok.*;
 import java.time.LocalDate;
 
 /**
- * User
+ * User.
  */
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Data
 @AllArgsConstructor
+@Builder
 public class User {
-    private final int id;
+    private int id;
+    @NonNull
     private String email;
+    @NonNull
     private String login;
-    private String name;
+    private String name = "";
+    @NonNull
     private LocalDate birthday;
 }
