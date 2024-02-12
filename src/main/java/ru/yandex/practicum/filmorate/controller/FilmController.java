@@ -32,17 +32,15 @@ public class FilmController {
      * @return added film
      * @throws ValidationException if the film's values are invalid
      */
+
+    @ExceptionHandler(ValidationException.class)
     @PostMapping
     public Film addFilm(@RequestBody Film film) throws ValidationException {
-        try {
-            Validator.filmValidation(film);
-            int filmId = generatorId();
-            film.setId(filmId);
-            films.put(filmId, film);
-            log.info("New film has just added {}", film);
-        } catch (ValidationException exception) {
-            throw exception;
-        }
+        log.info("New film has just added {}", film);
+        Validator.filmValidation(film);
+        int filmId = generatorId();
+        film.setId(filmId);
+        films.put(filmId, film);
         return film;
     }
 
@@ -51,18 +49,15 @@ public class FilmController {
      * @return updated film
      * @throws ValidationException if the film's values are invalid
      */
+    @ExceptionHandler(ValidationException.class)
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
-        try {
-            Validator.filmValidation(film);
-            if (films.containsKey(film.getId())) {
-                films.put(film.getId(), film);
-            } else {
-                throw new NoSuchElementException("This film not exist to update");
-            }
-            log.info("Film has just updated {}", film);
-        } catch (ValidationException exception) {
-            throw exception;
+        log.info("Film has just updated {}", film);
+        Validator.filmValidation(film);
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
+        } else {
+            throw new NoSuchElementException("This film not exist to update");
         }
         return film;
     }

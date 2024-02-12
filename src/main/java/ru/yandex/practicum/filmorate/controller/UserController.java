@@ -32,18 +32,16 @@ public class UserController {
      * @return dded user
      * @throws ValidationException if the user's values are invalid
      */
+
+    @ExceptionHandler(ValidationException.class)
     @PostMapping
     public User addUser(@RequestBody User user) throws ValidationException {
-        try {
-            makeUserLoginAlsoName(user);
-            Validator.userValidation(user);
-            int userId = generatorId();
-            user.setId(userId);
-            users.put(userId, user);
-            log.info("New user has just added {}", user);
-        } catch (ValidationException exception) {
-            throw exception;
-        }
+        log.info("New user has just added {}", user);
+        makeUserLoginAlsoName(user);
+        Validator.userValidation(user);
+        int userId = generatorId();
+        user.setId(userId);
+        users.put(userId, user);
         return user;
     }
 
@@ -52,18 +50,16 @@ public class UserController {
      * @return updated user
      * @throws ValidationException if the user's values are invalid
      */
+
+    @ExceptionHandler(ValidationException.class)
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidationException {
-        try {
-            Validator.userValidation(user);
-            if (users.containsKey(user.getId())) {
-                users.put(user.getId(), user);
-                log.info("User's info has just updated {}", user);
-            } else {
-                throw new NoSuchElementException("This user not exist to update");
-            }
-        } catch (ValidationException exception) {
-            throw exception;
+        log.info("User's info has just updated {}", user);
+        Validator.userValidation(user);
+        if (users.containsKey(user.getId())) {
+            users.put(user.getId(), user);
+        } else {
+            throw new NoSuchElementException("This user not exist to update");
         }
         return user;
     }
