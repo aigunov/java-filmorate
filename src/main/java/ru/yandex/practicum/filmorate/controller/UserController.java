@@ -15,7 +15,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private Map<Integer, User> users = new HashMap();
+    private final Map<Integer, User> users = new HashMap();
     private int generatedId = 0;
 
     /**
@@ -56,7 +56,7 @@ public class UserController {
     public User updateUser(@RequestBody User user) throws ValidationException {
         try {
             Validator.userValidation(user);
-            if (users.keySet().contains(user.getId())) {
+            if (users.containsKey(user.getId())) {
                 users.put(user.getId(), user);
                 log.info("User's info has just updated {}", user);
             } else {

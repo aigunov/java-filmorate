@@ -9,10 +9,11 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ValidatorTest {
-    private static String over200SymbolsString = "PNIlNCj5mapcpFQ4xJpC15PYNhrwIVTq7mo3JfjD9fuibc0OR2sWIaUhz3uT0qOXrHobc8DY" +
+    private static final String over200SymbolsString = "PNIlNCj5mapcpFQ4xJpC15PYNhrwIVTq7mo3JfjD9fuibc0OR2sWIaUhz3uT0qOXrHobc8DY" +
             "bwk9FZyYKN697IQdL9IhdIC37pgWfpPhmaJ1rsGJaUTjcn0AlI8cJVuJVPT7dvrM0t6XoGEde3dAm2E6frM1nbMLFwIfjuW8YBrqXN" +
             "DyGsSzTqRgNYbjcGbz1mnBDPH1X";
     private static Film correctFilm, futureFilm, pastFilm, emptyNameFilm, over200SymbolsFilm, negativeDurationFilm;
@@ -20,14 +21,14 @@ class ValidatorTest {
 
 
     @BeforeAll
-    public static void setUp(){
+    public static void setUp() {
         //films set up values
-        correctFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1990,  9, 28), 190);
+        correctFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), 190);
         futureFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.now().plusDays(20), 190);
         pastFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1895, 12, 27), 190);
-        emptyNameFilm = new Film(1, 4, "", "RUN FOREST", LocalDate.of(1990,  9, 28), 190);
-        over200SymbolsFilm = new Film(1, 4, "Forest", over200SymbolsString, LocalDate.of(1990,  9, 28), 190);
-        negativeDurationFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1990,  9, 28), -1);
+        emptyNameFilm = new Film(1, 4, "", "RUN FOREST", LocalDate.of(1990, 9, 28), 190);
+        over200SymbolsFilm = new Film(1, 4, "Forest", over200SymbolsString, LocalDate.of(1990, 9, 28), 190);
+        negativeDurationFilm = new Film(1, 4, "Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), -1);
 
         //users set up values
         correctUser = new User(1, "mr-white@yandex.ru", "mr-white", "MrWhite", LocalDate.of(2000, 9, 29));
@@ -48,7 +49,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionIfFilmsReleaseDateIsFutureTest() throws ValidationException{
+    public void throwsExceptionIfFilmsReleaseDateIsFutureTest() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -58,7 +59,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionIfFilmsReleaseIfEarlyThanFirstFilmEverTest() throws ValidationException{
+    public void throwsExceptionIfFilmsReleaseIfEarlyThanFirstFilmEverTest() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -68,7 +69,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionIfFilmsNameIsEmpty() throws ValidationException{
+    public void throwsExceptionIfFilmsNameIsEmpty() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -78,7 +79,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionIfFilmDescriptionLengthIsOver200SymbolsTest() throws ValidationException{
+    public void throwsExceptionIfFilmDescriptionLengthIsOver200SymbolsTest() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -88,7 +89,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionIfFilmDurationIsNegativeTest() throws ValidationException{
+    public void throwsExceptionIfFilmDurationIsNegativeTest() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -98,7 +99,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void notThrowsExceptionOnCorrectUserTest() throws ValidationException{
+    public void notThrowsExceptionOnCorrectUserTest() throws ValidationException {
         assertDoesNotThrow(new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -108,7 +109,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionOnUserWithoutDogSymbolInEmailTest() throws ValidationException{
+    public void throwsExceptionOnUserWithoutDogSymbolInEmailTest() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -118,7 +119,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionOnUserWithBirthdayInTheFuture() throws ValidationException{
+    public void throwsExceptionOnUserWithBirthdayInTheFuture() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -128,7 +129,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionOnUserWithEmptyLogin() throws ValidationException{
+    public void throwsExceptionOnUserWithEmptyLogin() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -138,7 +139,7 @@ class ValidatorTest {
     }
 
     @Test
-    public void throwsExceptionOnUserWithWhiteSpaceInLogin() throws ValidationException{
+    public void throwsExceptionOnUserWithWhiteSpaceInLogin() throws ValidationException {
         assertThrows(ValidationException.class, new Executable() {
             @Override
             public void execute() throws Throwable {

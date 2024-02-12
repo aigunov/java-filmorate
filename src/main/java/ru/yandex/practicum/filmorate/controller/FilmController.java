@@ -15,7 +15,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private Map<Integer, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
     private int generatedId = 0;
 
     /**
@@ -55,7 +55,7 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
         try {
             Validator.filmValidation(film);
-            if (films.keySet().contains(film.getId())) {
+            if (films.containsKey(film.getId())) {
                 films.put(film.getId(), film);
             } else {
                 throw new NoSuchElementException("This film not exist to update");
