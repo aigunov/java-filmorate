@@ -15,7 +15,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> users = new HashMap();
     private int generatedId = 0;
 
     /**
@@ -36,13 +35,7 @@ public class UserController {
     @ExceptionHandler(ValidationException.class)
     @PostMapping
     public User addUser(@RequestBody User user) throws ValidationException {
-        log.info("New user has just added {}", user);
-        makeUserLoginAlsoName(user);
-        Validator.userValidation(user);
-        int userId = generatorId();
-        user.setId(userId);
-        users.put(userId, user);
-        return user;
+
     }
 
     /**
@@ -54,14 +47,7 @@ public class UserController {
     @ExceptionHandler(ValidationException.class)
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidationException {
-        log.info("User's info has just updated {}", user);
-        Validator.userValidation(user);
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-        } else {
-            throw new NoSuchElementException("This user not exist to update");
-        }
-        return user;
+
     }
 
     /**

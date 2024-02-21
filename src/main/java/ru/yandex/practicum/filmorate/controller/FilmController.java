@@ -15,7 +15,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
     private int generatedId = 0;
 
     /**
@@ -33,15 +32,9 @@ public class FilmController {
      * @throws ValidationException if the film's values are invalid
      */
 
-    @ExceptionHandler(ValidationException.class)
     @PostMapping
     public Film addFilm(@RequestBody Film film) throws ValidationException {
-        log.info("New film has just added {}", film);
-        Validator.filmValidation(film);
-        int filmId = generatorId();
-        film.setId(filmId);
-        films.put(filmId, film);
-        return film;
+
     }
 
     /**
@@ -52,14 +45,7 @@ public class FilmController {
     @ExceptionHandler(ValidationException.class)
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
-        log.info("Film has just updated {}", film);
-        Validator.filmValidation(film);
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-        } else {
-            throw new NoSuchElementException("This film not exist to update");
-        }
-        return film;
+
     }
 
     /**
