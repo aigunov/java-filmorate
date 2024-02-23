@@ -6,15 +6,13 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Component
 @Slf4j
-public class InMemoryFilmStorage implements FilmStorage{
-
+public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films = new HashMap<>();
+    private int generatedId = 0;
 
     @Override
     public Film addFilmToStorage(Film film) throws ValidationException {
@@ -27,8 +25,14 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     @Override
-    public Film deleteFilmFromStorage(Film film) throws ValidationException {
+    public Film getFilmFromStorage(int id){
+        log.info("Client get the film by ID");
+        return films.get(id);
+    }
 
+    @Override
+    public Film deleteFilmFromStorage(int id) {
+        return films.remove(id);
     }
 
     @Override
@@ -41,5 +45,18 @@ public class InMemoryFilmStorage implements FilmStorage{
             throw new NoSuchElementException("This film not exist to update");
         }
         return film;
+    }
+
+
+    /**
+     * @return generated id for new film
+     */
+    private int generatorId() {
+        return ++generatedId;
+    }
+
+    @Override
+    public List<Film> getFilms() {
+        return new ArrayList<>(films.values());
     }
 }

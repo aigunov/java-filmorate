@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.UserFriendException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.Validator;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Accept POST, PUT, GET requests to /users
@@ -15,15 +19,23 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private int generatedId = 0;
+
+    private final UserService userService;
+    private final UserStorage userStorage;
+
+
+    @Autowired
+    public UserController(UserService userService, InMemoryUserStorage userStorage) {
+        this.userService = userService;
+        this.userStorage = userStorage;
+    }
 
     /**
-     * @return list of all users
+     * @return the user
      */
-    @GetMapping
-    public List<User> getUsers() {
-        log.info("Client get list of all users");
-        return new ArrayList<>(users.values());
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable int id) {
+        return userStorage.getUserFromStorage(id);
     }
 
     /**
@@ -31,11 +43,9 @@ public class UserController {
      * @return dded user
      * @throws ValidationException if the user's values are invalid
      */
-
-    @ExceptionHandler(ValidationException.class)
     @PostMapping
     public User addUser(@RequestBody User user) throws ValidationException {
-
+        return userStorage.addUserToStorage(user);
     }
 
     /**
@@ -44,27 +54,46 @@ public class UserController {
      * @throws ValidationException if the user's values are invalid
      */
 
-    @ExceptionHandler(ValidationException.class)
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidationException {
-
+        return userStorage.updateUserInStorage(user);
     }
 
-    /**
-     * @return generated id for new user
-     */
-    private int generatorId() {
-        return ++generatedId;
+    @DeleteMapping("/{id}")
+    public User deleteUser(@PathVariable int id) {
+        return userStorage.deleteUserFromStorage(id);
     }
 
-    /**
-     * sets the login as a username if the username is empty
-     *
-     * @param user is object to check if field username if empty
-     */
-    private void makeUserLoginAlsoName(User user) {
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
+    @PutMapping("{id}/friends/{friendId}")
+    public User addFriend(
+            @PathVariable int id,
+            @PathVariable int friendId) throws UserFriendException {
+        return userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("{id}/friends/{friends}")
+    public User deleteFriend(
+            @PathVariable int id,
+            @PathVariable int friendId) throws UserFriendException {
+        return userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("{id}/friends")
+    public List<User> getFriends(@PathVariable int id) {
+        return userService.getListOfFriends(id);
+    }
+
+    @GetMapping("{id}/friends{friendId}")
+    public User getFriend(
+            @PathVariable int id,
+            @PathVariable int friendId){
+        return userService.getFriendById(id, friendId);
+    }
+
+    @GetMapping("{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(
+            @PathVariable int id,
+            @PathVariable int otherId) {
+        return userService.getListOfCommonsFriends(id, otherId);
     }
 }

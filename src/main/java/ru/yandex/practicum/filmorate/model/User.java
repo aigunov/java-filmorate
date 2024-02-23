@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User.
@@ -20,10 +23,11 @@ public class User {
     @NonNull
     @Email
     private String email;
-    @NonNull
     @NotNull
     private String login;
     private String name = "";
     @NonNull
     private LocalDate birthday;
+    private List<User> friends = new ArrayList<>();
+    private List<Film> likedFilms = new ArrayList<>();
 }

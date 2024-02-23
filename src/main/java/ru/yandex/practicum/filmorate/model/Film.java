@@ -25,5 +25,6 @@ public class Film {
     private int id;
     @Positive
     private int rate;
+    private int likeCount = 0;
 
 }

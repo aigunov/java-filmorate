@@ -6,15 +6,13 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Component
 @Slf4j
-public class InMemoryUserStorage implements UserStorage{
-
+public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap();
+    private int generatedId = 0;
 
     @Override
     public User addUserToStorage(User user) throws ValidationException {
@@ -28,8 +26,15 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User deleteUserFromStorage(User user) {
-        return null;
+    public User getUserFromStorage(int id){
+        log.info("Client get info about the user by ID");
+        return users.get(id);
+    }
+    @Override
+    public User deleteUserFromStorage(int id) {
+        User user = users.remove(id);//некрасивый код вышел
+        log.info("The user has been deleted ");
+        return user;
     }
 
     @Override
@@ -42,5 +47,28 @@ public class InMemoryUserStorage implements UserStorage{
             throw new NoSuchElementException("This user not exist to update");
         }
         return user;
+    }
+
+    /**
+     * @return generated id for new user
+     */
+    private int generatorId() {
+        return ++generatedId;
+    }
+
+    /**
+     * sets the login as a username if the username is empty
+     *
+     * @param user is object to check if field username if empty
+     */
+    private void makeUserLoginAlsoName(User user) {
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+        }
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return new ArrayList<>(users.values());
     }
 }

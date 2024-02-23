@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.FilmLikeException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.validator.Validator;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Accepts POST, PUT, GET requests at /films
@@ -15,15 +19,25 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private int generatedId = 0;
+
+    private final FilmService filmService;
+    private final FilmStorage filmStorage;
+
+    @Autowired
+    public FilmController(FilmService filmService, InMemoryFilmStorage filmStorage) {
+        this.filmService = filmService;
+        this.filmStorage = filmStorage;
+    }
 
     /**
      * @return List of all films
      */
     @GetMapping
-    public List<Film> getFilms() {
-        log.info("Client get list of all films");
-        return new ArrayList<>(films.values());
+    public List<Film> getFilms(){return filmStorage.getFilms();}
+
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable int id) {
+        return filmStorage.getFilmFromStorage(id);
     }
 
     /**
@@ -34,7 +48,7 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@RequestBody Film film) throws ValidationException {
-
+        return filmStorage.addFilmToStorage(film);
     }
 
     /**
@@ -42,16 +56,32 @@ public class FilmController {
      * @return updated film
      * @throws ValidationException if the film's values are invalid
      */
-    @ExceptionHandler(ValidationException.class)
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException {
-
+        return filmStorage.updateFilmInStorage(film);
     }
 
-    /**
-     * @return generated id for new film
-     */
-    private int generatorId() {
-        return ++generatedId;
+    @DeleteMapping("/{id}")
+    public Film deleteFilm(@PathVariable int id){
+        return filmStorage.deleteFilmFromStorage(id);
+    }
+
+    @PutMapping("{id}/like/{userId}")
+    public Film putLike(
+            @PathVariable int id,
+            @PathVariable int userId) throws FilmLikeException {
+        return filmService.putLike(id, userId);
+    }
+
+    @DeleteMapping("{id}/like/{userId}")
+    public Film removeLike(
+            @PathVariable int id,
+            @PathVariable int userId) throws FilmLikeException {
+        return filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count){
+        return filmService.getTopPopularFilms(count);
     }
 }
