@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserFriendException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -21,21 +23,25 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserStorage userStorage;
 
 
     @Autowired
-    public UserController(UserService userService, InMemoryUserStorage userStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userStorage = userStorage;
     }
+
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> getUsers(){return userService.getUsers();}
 
     /**
      * @return the user
      */
     @GetMapping("/{id}")
-    public User getUser(@PathVariable int id) {
-        return userStorage.getUserFromStorage(id);
+    @ResponseStatus(HttpStatus.OK)
+    public User getUser(@PathVariable int id) throws ElementNotFoundException {
+        return userService.getUserById(id);
     }
 
     /**
@@ -44,8 +50,9 @@ public class UserController {
      * @throws ValidationException if the user's values are invalid
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User addUser(@RequestBody User user) throws ValidationException {
-        return userStorage.addUserToStorage(user);
+        return userService.addUser(user);
     }
 
     /**
@@ -55,45 +62,52 @@ public class UserController {
      */
 
     @PutMapping
+    @ResponseStatus(HttpStatus.OK)
     public User updateUser(@RequestBody User user) throws ValidationException {
-        return userStorage.updateUserInStorage(user);
+        return userService.updateUser(user);
     }
 
     @DeleteMapping("/{id}")
-    public User deleteUser(@PathVariable int id) {
-        return userStorage.deleteUserFromStorage(id);
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public User deleteUser(@PathVariable int id) throws ElementNotFoundException {
+        return userService.removeUser(id);
     }
 
     @PutMapping("{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
     public User addFriend(
             @PathVariable int id,
-            @PathVariable int friendId) throws UserFriendException {
+            @PathVariable int friendId) throws UserFriendException, ElementNotFoundException {
         return userService.addFriend(id, friendId);
     }
 
-    @DeleteMapping("{id}/friends/{friends}")
+    @DeleteMapping("{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
     public User deleteFriend(
             @PathVariable int id,
-            @PathVariable int friendId) throws UserFriendException {
+            @PathVariable int friendId) throws UserFriendException, ElementNotFoundException {
         return userService.removeFriend(id, friendId);
     }
 
     @GetMapping("{id}/friends")
-    public List<User> getFriends(@PathVariable int id) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> getFriends(@PathVariable int id) throws ElementNotFoundException {
         return userService.getListOfFriends(id);
     }
 
-    @GetMapping("{id}/friends{friendId}")
+    @GetMapping("{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
     public User getFriend(
             @PathVariable int id,
-            @PathVariable int friendId){
+            @PathVariable int friendId) throws ElementNotFoundException {
         return userService.getFriendById(id, friendId);
     }
 
     @GetMapping("{id}/friends/common/{otherId}")
+    @ResponseStatus(HttpStatus.OK)
     public List<User> getCommonFriends(
             @PathVariable int id,
-            @PathVariable int otherId) {
+            @PathVariable int otherId) throws ElementNotFoundException {
         return userService.getListOfCommonsFriends(id, otherId);
     }
 }

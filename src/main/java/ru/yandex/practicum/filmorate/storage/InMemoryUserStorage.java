@@ -26,10 +26,23 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserFromStorage(int id){
+    public User updateUserInStorage(User user) throws ValidationException {
+        log.info("User's info has just updated {}", user);
+        Validator.userValidation(user);
+        if (users.containsKey(user.getId())) {
+            users.put(user.getId(), user);
+        } else {
+            log.error(String.format("the %s user is not exist in storage to update him", user.getName()));
+            throw new NoSuchElementException("This user not exist to update");
+        }
+        return user;
+    }
+    @Override
+    public User getUserFromStorage(int id) {
         log.info("Client get info about the user by ID");
         return users.get(id);
     }
+
     @Override
     public User deleteUserFromStorage(int id) {
         User user = users.remove(id);//некрасивый код вышел
@@ -37,17 +50,6 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    @Override
-    public User updateUserInStorage(User user) throws ValidationException {
-        log.info("User's info has just updated {}", user);
-        Validator.userValidation(user);
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-        } else {
-            throw new NoSuchElementException("This user not exist to update");
-        }
-        return user;
-    }
 
     /**
      * @return generated id for new user
@@ -62,7 +64,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param user is object to check if field username if empty
      */
     private void makeUserLoginAlsoName(User user) {
-        if (user.getName() == null) {
+        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
     }

@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.validation.constraints.Email;
@@ -16,6 +13,7 @@ import java.util.List;
  * User.
  */
 @Data
+@EqualsAndHashCode(of = "id")
 @AllArgsConstructor
 @Builder
 public class User {
@@ -28,6 +26,6 @@ public class User {
     private String name = "";
     @NonNull
     private LocalDate birthday;
-    private List<User> friends = new ArrayList<>();
-    private List<Film> likedFilms = new ArrayList<>();
+    @ToString.Exclude private final List<Integer> friends = new ArrayList<>();
+    @ToString.Exclude private final List<Film> likedFilms = new ArrayList<>();
 }

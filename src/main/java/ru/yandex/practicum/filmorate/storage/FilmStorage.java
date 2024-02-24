@@ -10,8 +10,11 @@ public interface FilmStorage {
     Film addFilmToStorage(Film film) throws ValidationException;
 
     Film deleteFilmFromStorage(int id);
-    Film getFilmFromStorage(int id);
+
     Film updateFilmInStorage(Film film) throws ValidationException;
 
+    Film getFilmFromStorage(int id);
+
     List<Film> getFilms();
+
 }

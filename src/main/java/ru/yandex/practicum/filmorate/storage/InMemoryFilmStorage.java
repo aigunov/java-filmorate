@@ -16,23 +16,12 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilmToStorage(Film film) throws ValidationException {
-        log.info("New film has just added {}", film);
+        log.info("The film has just added {}", film);
         Validator.filmValidation(film);
         int filmId = generatorId();
         film.setId(filmId);
         films.put(filmId, film);
         return film;
-    }
-
-    @Override
-    public Film getFilmFromStorage(int id){
-        log.info("Client get the film by ID");
-        return films.get(id);
-    }
-
-    @Override
-    public Film deleteFilmFromStorage(int id) {
-        return films.remove(id);
     }
 
     @Override
@@ -46,6 +35,23 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         return film;
     }
+    @Override
+    public Film getFilmFromStorage(int id){
+        log.info("Client get the film by ID");
+        return films.get(id);
+    }
+
+    @Override
+    public List<Film> getFilms() {
+        return new ArrayList<>(films.values());
+    }
+
+    @Override
+    public Film deleteFilmFromStorage(int id) {
+        log.info("The film have been removed");
+        return films.remove(id);
+    }
+
 
 
     /**
@@ -55,8 +61,4 @@ public class InMemoryFilmStorage implements FilmStorage {
         return ++generatedId;
     }
 
-    @Override
-    public List<Film> getFilms() {
-        return new ArrayList<>(films.values());
-    }
 }
