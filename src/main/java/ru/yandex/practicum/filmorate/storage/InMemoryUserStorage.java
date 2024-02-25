@@ -37,6 +37,7 @@ public class InMemoryUserStorage implements UserStorage {
         }
         return user;
     }
+
     @Override
     public User getUserFromStorage(int id) {
         log.info("Client get info about the user by ID");

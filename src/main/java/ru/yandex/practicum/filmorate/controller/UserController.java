@@ -9,8 +9,6 @@ import ru.yandex.practicum.filmorate.exception.UserFriendException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 
@@ -30,10 +28,14 @@ public class UserController {
         this.userService = userService;
     }
 
-
+    /**
+     * @return the list of all users
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getUsers(){return userService.getUsers();}
+    public List<User> getUsers() {
+        return userService.getUsers();
+    }
 
     /**
      * @return the user
@@ -67,12 +69,25 @@ public class UserController {
         return userService.updateUser(user);
     }
 
+    /**
+     * @param id of the user's data to delete
+     * @return the deleted user object
+     * @throws ElementNotFoundException
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public User deleteUser(@PathVariable int id) throws ElementNotFoundException {
         return userService.removeUser(id);
     }
 
+    /**
+     * the endpoint method for adding a user as a friend
+     * @param id of the user of the subject
+     * @param friendId of the user of the object
+     * @return object of friendId's data
+     * @throws UserFriendException
+     * @throws ElementNotFoundException
+     */
     @PutMapping("{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
     public User addFriend(
@@ -81,6 +96,14 @@ public class UserController {
         return userService.addFriend(id, friendId);
     }
 
+    /**
+     * the endpoint method allows one user to remove their friends from the list
+     * @param id of the user of the subject
+     * @param friendId of the user of the object
+     * @return object of friendId's data
+     * @throws UserFriendException
+     * @throws ElementNotFoundException
+     */
     @DeleteMapping("{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
     public User deleteFriend(
@@ -89,12 +112,24 @@ public class UserController {
         return userService.removeFriend(id, friendId);
     }
 
+    /**
+     * the endpoint method returns a list of the user's friends
+     * @param id of the user of the subject
+     * @throws ElementNotFoundException
+     */
     @GetMapping("{id}/friends")
     @ResponseStatus(HttpStatus.OK)
     public List<User> getFriends(@PathVariable int id) throws ElementNotFoundException {
         return userService.getListOfFriends(id);
     }
 
+    /**
+     * the endpoint method return the user's friend by his id
+     * @param id of the user who get information
+     * @param friendId of the friend-user
+     * @return data object of friend
+     * @throws ElementNotFoundException
+     */
     @GetMapping("{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
     public User getFriend(
@@ -103,6 +138,12 @@ public class UserController {
         return userService.getFriendById(id, friendId);
     }
 
+    /**
+     * the endpoint method return the list of mutual friends for two different users
+     * @param id of the user of the subject
+     * @param otherId of the user of the object
+     * @throws ElementNotFoundException
+     */
     @GetMapping("{id}/friends/common/{otherId}")
     @ResponseStatus(HttpStatus.OK)
     public List<User> getCommonFriends(

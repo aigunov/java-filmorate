@@ -24,19 +24,19 @@ class ValidatorTest {
     @BeforeAll
     public static void setUp() {
         //films set up values
-        correctFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4,0);
+        correctFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4, 0);
         futureFilm = new Film("Forest", "RUN FOREST", LocalDate.now().plusDays(20), 190, 1, 4, 0);
         pastFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1895, 12, 20), 190, 1, 4, 0);
         emptyNameFilm = new Film("", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4, 0);
-        over200SymbolsFilm = new Film("Forest", over200SymbolsString, LocalDate.of(1990, 9, 28), 190, 1, 4,0);
+        over200SymbolsFilm = new Film("Forest", over200SymbolsString, LocalDate.of(1990, 9, 28), 190, 1, 4, 0);
         negativeDurationFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), -1, 1, 4, 0);
 
         //users set up values
-        correctUser = new User(1, "mr-white@yandex.ru", "mr-white", "MrWhite", LocalDate.of(2000, 9, 29),  new ArrayList<>(),  new ArrayList<>());
-        emailWithoutDogSymbolUser = new User(1, "mr-whiteyandex.ru", "mr-white", "MrWhite", LocalDate.of(2000, 9, 29),  new ArrayList<>(),  new ArrayList<>());
-        birthdayInFutureUser = new User(1, "mr-white@yandex.ru", "mr-white", "MrWhite", LocalDate.now().plusDays(1),  new ArrayList<>(),  new ArrayList<>());
-        emptyLoginUser = new User(1, "mr-white@yandex.ru", "", "MrWhite", LocalDate.of(2000, 9, 29),  new ArrayList<>(),  new ArrayList<>());
-        loginWithVoidUser = new User(1, "mr-white@yandex.ru", "mr white", "MrWhite", LocalDate.of(2000, 9, 29),  new ArrayList<>(),  new ArrayList<>());
+        correctUser = new User(1, "mr-white@yandex.ru", "mr-white", "MrWhite", LocalDate.of(2000, 9, 29));
+        emailWithoutDogSymbolUser = new User(1, "mr-whiteyandex.ru", "mr-white", "MrWhite", LocalDate.of(2000, 9, 29));
+        birthdayInFutureUser = new User(1, "mr-white@yandex.ru", "mr-white", "MrWhite", LocalDate.now().plusDays(1));
+        emptyLoginUser = new User(1, "mr-white@yandex.ru", "", "MrWhite", LocalDate.of(2000, 9, 29));
+        loginWithVoidUser = new User(1, "mr-white@yandex.ru", "mr white", "MrWhite", LocalDate.of(2000, 9, 29));
     }
 
     @Test

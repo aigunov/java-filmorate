@@ -35,8 +35,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         return film;
     }
+
     @Override
-    public Film getFilmFromStorage(int id){
+    public Film getFilmFromStorage(int id) {
         log.info("Client get the film by ID");
         return films.get(id);
     }
@@ -51,7 +52,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("The film have been removed");
         return films.remove(id);
     }
-
 
 
     /**

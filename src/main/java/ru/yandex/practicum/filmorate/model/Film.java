@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -22,7 +25,7 @@ public class Film {
     private final LocalDate releaseDate;
     @Positive
     private final int duration;
-    private int id;
+    private Integer id;
     @Positive
     private int rate;
     @NotNull

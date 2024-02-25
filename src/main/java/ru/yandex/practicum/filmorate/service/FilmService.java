@@ -29,36 +29,57 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
+    /**
+     * the method responsible for the logic of putting a like on a movie
+     * @param filmId of the film which user like
+     * @param userId of the user who put like
+     * @return liked film
+     * @throws FilmLikeException
+     * @throws ElementNotFoundException
+     */
     public Film putLike(int filmId, int userId) throws FilmLikeException, ElementNotFoundException {
         User user = userStorage.getUserFromStorage(userId);
         Film film = filmStorage.getFilmFromStorage(filmId);
         filmNotExistThrow(film);
         userNotExistThrow(user);
-        if (user.getLikedFilms().contains(film)) {
+        if (user.getLikedFilms().contains(film.getId())) {
             log.error(String.format("client can't like the %s film more than once", film.getName()));
             throw new FilmLikeException(String.format("you already like the %s film", film.getName()));
         }
-        user.getLikedFilms().add(film);
+        user.getLikedFilms().add(film.getId());
         film.setLikeCount(film.getLikeCount() + 1);
         log.info(String.format("client has just like the %s film", film.getName()));
         return film;
     }
 
+    /**
+     * the method responsible for the logic of remove a like on a movie
+     * @param filmId of the film which user unlike
+     * @param userId of the user who remove his like
+     * @return unliked film
+     * @throws FilmLikeException
+     * @throws ElementNotFoundException
+     */
     public Film removeLike(int filmId, int userId) throws FilmLikeException, ElementNotFoundException {
         User user = userStorage.getUserFromStorage(userId);
         Film film = filmStorage.getFilmFromStorage(filmId);
         filmNotExistThrow(film);
         userNotExistThrow(user);
-        if (!user.getLikedFilms().contains(film)) {
+        if (!user.getLikedFilms().contains(film.getId())) {
             log.error(String.format("client can't remove the like from the %s film ", film.getName()));
             throw new FilmLikeException(String.format("you haven't liked the %s film", film.getName()));
         }
-        user.getLikedFilms().remove(film);
+        user.getLikedFilms().remove(film.getId());
         film.setLikeCount(film.getLikeCount() - 1);
         log.error(String.format("client has just remove his like from the %s film", film.getName()));
         return film;
     }
 
+    /**
+     * return the list most popular films comparing by likes count long in size param
+     * @param size of list
+     * @return
+     */
     public List<Film> getTopPopularFilms(int size) {
         log.info("client has got the list of most popular films");
         return filmStorage.getFilms().stream().
