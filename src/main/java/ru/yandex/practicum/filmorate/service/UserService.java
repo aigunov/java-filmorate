@@ -27,7 +27,8 @@ public class UserService {
 
     /**
      * the method responsible for the logic of adding another user to friends by the user
-     * @param userId of the user of the subject
+     *
+     * @param userId   of the user of the subject
      * @param friendId of the user of the object
      * @return user who has just benn added to friends list
      * @throws UserFriendException
@@ -50,7 +51,8 @@ public class UserService {
 
     /**
      * the method responsible for the logic of removing another user to friends by the user
-     * @param userId of the user of the subject
+     *
+     * @param userId   of the user of the subject
      * @param friendId of the user of the object
      * @return user who has just been removed from fiends list
      * @throws UserFriendException
@@ -84,7 +86,7 @@ public class UserService {
     }
 
     /**
-     * @param id of the user of the subject
+     * @param id       of the user of the subject
      * @param friendId of the user of the object
      * @throws ElementNotFoundException
      */
@@ -97,7 +99,8 @@ public class UserService {
 
     /**
      * the method responsible for the logic of getCommonsFriends endpoint
-     * @param id of the user of the subject
+     *
+     * @param id      of the user of the subject
      * @param otherId of the user of the object
      * @throws ElementNotFoundException
      */

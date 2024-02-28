@@ -82,7 +82,7 @@ public class FilmController {
     }
 
     /**
-     * @param id of the film to like
+     * @param id     of the film to like
      * @param userId of user who like the film
      * @return the film that user liked
      * @throws FilmLikeException
@@ -95,7 +95,7 @@ public class FilmController {
     }
 
     /**
-     * @param id a film from like was deleted
+     * @param id     a film from like was deleted
      * @param userId a user who remove his like
      * @return the film which was unliked
      * @throws FilmLikeException

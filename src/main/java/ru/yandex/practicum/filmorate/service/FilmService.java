@@ -11,7 +11,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,6 +31,7 @@ public class FilmService {
 
     /**
      * the method responsible for the logic of putting a like on a movie
+     *
      * @param filmId of the film which user like
      * @param userId of the user who put like
      * @return liked film
@@ -52,6 +55,7 @@ public class FilmService {
 
     /**
      * the method responsible for the logic of remove a like on a movie
+     *
      * @param filmId of the film which user unlike
      * @param userId of the user who remove his like
      * @return unliked film
@@ -75,6 +79,7 @@ public class FilmService {
 
     /**
      * return the list most popular films comparing by likes count long in size param
+     *
      * @param size of list
      * @return
      */

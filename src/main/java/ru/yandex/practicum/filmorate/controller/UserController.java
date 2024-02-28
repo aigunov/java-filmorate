@@ -52,7 +52,7 @@ public class UserController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@RequestBody User user) throws ValidationException { 
+    public User addUser(@RequestBody User user) throws ValidationException {
         return userService.addUser(user);
     }
 
@@ -81,7 +81,8 @@ public class UserController {
 
     /**
      * the endpoint method for adding a user as a friend
-     * @param id of the user of the subject
+     *
+     * @param id       of the user of the subject
      * @param friendId of the user of the object
      * @return object of friendId's data
      * @throws UserFriendException
@@ -97,7 +98,8 @@ public class UserController {
 
     /**
      * the endpoint method allows one user to remove their friends from the list
-     * @param id of the user of the subject
+     *
+     * @param id       of the user of the subject
      * @param friendId of the user of the object
      * @return object of friendId's data
      * @throws UserFriendException
@@ -113,6 +115,7 @@ public class UserController {
 
     /**
      * the endpoint method returns a list of the user's friends
+     *
      * @param id of the user of the subject
      * @throws ElementNotFoundException
      */
@@ -124,7 +127,8 @@ public class UserController {
 
     /**
      * the endpoint method return the user's friend by his id
-     * @param id of the user who get information
+     *
+     * @param id       of the user who get information
      * @param friendId of the friend-user
      * @return data object of friend
      * @throws ElementNotFoundException
@@ -139,7 +143,8 @@ public class UserController {
 
     /**
      * the endpoint method return the list of mutual friends for two different users
-     * @param id of the user of the subject
+     *
+     * @param id      of the user of the subject
      * @param otherId of the user of the object
      * @throws ElementNotFoundException
      */

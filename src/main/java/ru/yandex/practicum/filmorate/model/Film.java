@@ -27,11 +27,11 @@ public class Film {
     private final LocalDate releaseDate;
     @Positive
     private final int duration;
+    @NotNull
+    private final Set<Integer> likesId = new HashSet<>();
     private Integer id;
     @Positive
     private int rate;
-    @NotNull
-    private final Set<Integer> likesId = new HashSet<>();
 
 
 }
