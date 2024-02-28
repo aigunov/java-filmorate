@@ -15,7 +15,7 @@ public class InMemoryUserStorage implements UserStorage {
     private int generatedId = 0;
 
     @Override
-    public User addUserToStorage(User user) throws ValidationException {
+    public User addUser(User user) throws ValidationException {
         log.info("New user has just added {}", user);
         makeUserLoginAlsoName(user);
         Validator.userValidation(user);
@@ -26,7 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUserInStorage(User user) throws ValidationException {
+    public User updateUser(User user) throws ValidationException {
         log.info("User's info has just updated {}", user);
         Validator.userValidation(user);
         if (users.containsKey(user.getId())) {
@@ -39,13 +39,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserFromStorage(int id) {
+    public User getUserById(Integer id) {
         log.info("Client get info about the user by ID");
         return users.get(id);
     }
 
     @Override
-    public User deleteUserFromStorage(int id) {
+    public User deleteUserById(Integer id) {
         User user = users.remove(id);//некрасивый код вышел
         log.info("The user has been deleted ");
         return user;

@@ -33,11 +33,11 @@ public class UserService {
      * @throws UserFriendException
      * @throws ElementNotFoundException
      */
-    public User addFriend(int userId, int friendId) throws UserFriendException, ElementNotFoundException {
-        User user = userStorage.getUserFromStorage(userId);
-        User friend = userStorage.getUserFromStorage(friendId);
-        userNotExistThrows(user);
-        userNotExistThrows(friend);
+    public User addFriend(Integer userId, Integer friendId) throws UserFriendException, ElementNotFoundException {
+        User user = userStorage.getUserById(userId);
+        User friend = userStorage.getUserById(friendId);
+        checkIfUserNotExist(user);
+        checkIfUserNotExist(friend);
         if (user.getFriends().contains(friendId)) {
             log.error(String.format("client cannot add the %s user to the friends list again", friend.getName()));
             throw new UserFriendException(String.format("User with %d id is already your friend", friendId));
@@ -57,10 +57,10 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public User removeFriend(Integer userId, Integer friendId) throws UserFriendException, ElementNotFoundException {
-        User user = userStorage.getUserFromStorage(userId);
-        User friend = userStorage.getUserFromStorage(friendId);
-        userNotExistThrows(user);
-        userNotExistThrows(friend);
+        User user = userStorage.getUserById(userId);
+        User friend = userStorage.getUserById(friendId);
+        checkIfUserNotExist(user);
+        checkIfUserNotExist(friend);
         if (!user.getFriends().contains(friendId)) {
             log.error(String.format("client cannot remove the %s user who is not his friend from the friends list", friend.getName()));
             throw new UserFriendException(String.format("User with %d id is not your friend", friendId));
@@ -76,11 +76,11 @@ public class UserService {
      * @return the list of user's friends
      * @throws ElementNotFoundException
      */
-    public List<User> getListOfFriends(int id) throws ElementNotFoundException {
-        User user = userStorage.getUserFromStorage(id);
-        userNotExistThrows(user);
+    public List<User> getListOfFriends(Integer id) throws ElementNotFoundException {
+        User user = userStorage.getUserById(id);
+        checkIfUserNotExist(user);
         log.info("client has just got the list of his friends");
-        return user.getFriends().stream().map(userStorage::getUserFromStorage).collect(Collectors.toList());
+        return user.getFriends().stream().map(userStorage::getUserById).collect(Collectors.toList());
     }
 
     /**
@@ -88,11 +88,11 @@ public class UserService {
      * @param friendId of the user of the object
      * @throws ElementNotFoundException
      */
-    public User getFriendById(int id, int friendId) throws ElementNotFoundException {
-        User user = userStorage.getUserFromStorage(id);
-        userNotExistThrows(user);
+    public User getFriendById(Integer id, Integer friendId) throws ElementNotFoundException {
+        User user = userStorage.getUserById(id);
+        checkIfUserNotExist(user);
         log.info("client has just got a friend");
-        return userStorage.getUserFromStorage(user.getFriends().get(friendId));
+        return userStorage.getUserById(user.getFriends().get(friendId));
     }
 
     /**
@@ -101,15 +101,15 @@ public class UserService {
      * @param otherId of the user of the object
      * @throws ElementNotFoundException
      */
-    public List<User> getListOfCommonsFriends(int id, int otherId) throws ElementNotFoundException {
-        User user = userStorage.getUserFromStorage(id);
-        User friend = userStorage.getUserFromStorage(otherId);
-        userNotExistThrows(user);
-        userNotExistThrows(friend);
+    public List<User> getListOfCommonsFriends(Integer id, Integer otherId) throws ElementNotFoundException {
+        User user = userStorage.getUserById(id);
+        User friend = userStorage.getUserById(otherId);
+        checkIfUserNotExist(user);
+        checkIfUserNotExist(friend);
         if (!user.getFriends().isEmpty() && !friend.getFriends().isEmpty()) {
             log.info(String.format("client has just got the list of common friends with the %s user", friend.getName()));
-            return userStorage.getUsers().stream().
-                    filter(user1 -> (user1.getFriends().contains(user.getId()) && user1.getFriends().contains(friend.getId())) &&
+            return userStorage.getUsers().stream()
+                    .filter(user1 -> (user1.getFriends().contains(user.getId()) && user1.getFriends().contains(friend.getId())) &&
                             (!user1.equals(user.getId()) && !user1.equals(friend.getId()))).collect(Collectors.toList());
         } else {
             return new ArrayList<User>();
@@ -117,30 +117,30 @@ public class UserService {
 
     }
 
-    public User getUserById(int id) throws ElementNotFoundException {
-        userNotExistThrows(userStorage.getUserFromStorage(id));
-        return userStorage.getUserFromStorage(id);
+    public User getUserById(Integer id) throws ElementNotFoundException {
+        checkIfUserNotExist(userStorage.getUserById(id));
+        return userStorage.getUserById(id);
 
     }
 
     public User addUser(User user) throws ValidationException {
-        return userStorage.addUserToStorage(user);
+        return userStorage.addUser(user);
     }
 
     public User updateUser(User user) throws ValidationException {
-        return userStorage.updateUserInStorage(user);
+        return userStorage.updateUser(user);
     }
 
-    public User removeUser(int id) throws ElementNotFoundException {
-        userNotExistThrows(userStorage.getUserFromStorage(id));
-        return userStorage.deleteUserFromStorage(id);
+    public User removeUser(Integer id) throws ElementNotFoundException {
+        checkIfUserNotExist(userStorage.getUserById(id));
+        return userStorage.deleteUserById(id);
     }
 
     public List<User> getUsers() {
         return userStorage.getUsers();
     }
 
-    public void userNotExistThrows(User user) throws ElementNotFoundException {
+    public void checkIfUserNotExist(User user) throws ElementNotFoundException {
         if (user == null) {
             log.error("this user is not exist to return, probably the path variables incorrect");
             throw new ElementNotFoundException("the user is not exist");

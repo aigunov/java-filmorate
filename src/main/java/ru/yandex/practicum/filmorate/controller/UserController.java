@@ -52,7 +52,7 @@ public class UserController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@RequestBody User user) throws ValidationException {
+    public User addUser(@RequestBody User user) throws ValidationException { 
         return userService.addUser(user);
     }
 

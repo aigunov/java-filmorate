@@ -11,9 +11,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,17 +35,17 @@ public class FilmService {
      * @throws FilmLikeException
      * @throws ElementNotFoundException
      */
-    public Film putLike(int filmId, int userId) throws FilmLikeException, ElementNotFoundException {
-        User user = userStorage.getUserFromStorage(userId);
-        Film film = filmStorage.getFilmFromStorage(filmId);
-        filmNotExistThrow(film);
-        userNotExistThrow(user);
+    public Film putLike(Integer filmId, Integer userId) throws FilmLikeException, ElementNotFoundException {
+        User user = userStorage.getUserById(userId);
+        Film film = filmStorage.getFilmById(filmId);
+        checkIfFilmExist(film);
+        checkIfUserExist(user);
         if (user.getLikedFilms().contains(film.getId())) {
             log.error(String.format("client can't like the %s film more than once", film.getName()));
             throw new FilmLikeException(String.format("you already like the %s film", film.getName()));
         }
         user.getLikedFilms().add(film.getId());
-        film.setLikeCount(film.getLikeCount() + 1);
+        film.getLikesId().add(userId);
         log.info(String.format("client has just like the %s film", film.getName()));
         return film;
     }
@@ -60,17 +58,17 @@ public class FilmService {
      * @throws FilmLikeException
      * @throws ElementNotFoundException
      */
-    public Film removeLike(int filmId, int userId) throws FilmLikeException, ElementNotFoundException {
-        User user = userStorage.getUserFromStorage(userId);
-        Film film = filmStorage.getFilmFromStorage(filmId);
-        filmNotExistThrow(film);
-        userNotExistThrow(user);
+    public Film removeLike(Integer filmId, Integer userId) throws FilmLikeException, ElementNotFoundException {
+        User user = userStorage.getUserById(userId);
+        Film film = filmStorage.getFilmById(filmId);
+        checkIfFilmExist(film);
+        checkIfUserExist(user);
         if (!user.getLikedFilms().contains(film.getId())) {
             log.error(String.format("client can't remove the like from the %s film ", film.getName()));
             throw new FilmLikeException(String.format("you haven't liked the %s film", film.getName()));
         }
         user.getLikedFilms().remove(film.getId());
-        film.setLikeCount(film.getLikeCount() - 1);
+        film.getLikesId().remove(userId);
         log.error(String.format("client has just remove his like from the %s film", film.getName()));
         return film;
     }
@@ -82,10 +80,10 @@ public class FilmService {
      */
     public List<Film> getTopPopularFilms(int size) {
         log.info("client has got the list of most popular films");
-        return filmStorage.getFilms().stream().
-                sorted(Comparator.comparing(Film::getLikeCount).reversed()).
-                limit(size).
-                collect(Collectors.toList());
+        return filmStorage.getFilms().stream()
+                .sorted(Comparator.comparing(film -> ((Film) film).getLikesId().size()).reversed())
+                .limit(size)
+                .collect(Collectors.toList());
     }
 
 
@@ -94,14 +92,14 @@ public class FilmService {
         return filmStorage.getFilms();
     }
 
-    public Film getFilmById(int id) throws ElementNotFoundException {
-        Film film = filmStorage.getFilmFromStorage(id);
-        filmNotExistThrow(film);
+    public Film getFilmById(Integer id) throws ElementNotFoundException {
+        Film film = filmStorage.getFilmById(id);
+        checkIfFilmExist(film);
         return film;
     }
 
     public Film addNewFilm(Film film) throws ValidationException {
-        return filmStorage.addFilmToStorage(film);
+        return filmStorage.addFilm(film);
     }
 
     public Film updateFilm(Film film) throws ValidationException {
@@ -110,23 +108,23 @@ public class FilmService {
             throw new NoSuchElementException("This film not exist to update");
         }
         log.info(String.format("The %s film has been updated", film.getName()));
-        return filmStorage.updateFilmInStorage(film);
+        return filmStorage.updateFilm(film);
     }
 
-    public Film removeFilm(int id) throws ElementNotFoundException {
-        Film film = filmStorage.getFilmFromStorage(id);
-        filmNotExistThrow(film);
-        return filmStorage.deleteFilmFromStorage(id);
+    public Film removeFilm(Integer id) throws ElementNotFoundException {
+        Film film = filmStorage.getFilmById(id);
+        checkIfFilmExist(film);
+        return filmStorage.deleteFilmById(id);
     }
 
-    public void filmNotExistThrow(Film film) throws ElementNotFoundException {
+    public void checkIfFilmExist(Film film) throws ElementNotFoundException {
         if (film == null) {
             log.error("this film is not exist to return, probably the path variables incorrect");
             throw new ElementNotFoundException("this film is not exist");
         }
     }
 
-    public void userNotExistThrow(User user) throws ElementNotFoundException {
+    public void checkIfUserExist(User user) throws ElementNotFoundException {
         if (user == null) {
             log.error("this user is not exist to return, probably the path variables incorrect");
             throw new ElementNotFoundException("this user is not exist");

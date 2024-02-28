@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
 @Slf4j
 public class ErrorHandler {
 
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidatorException(ValidationException exception) {
@@ -43,6 +42,7 @@ public class ErrorHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleElementNotFoundException(ElementNotFoundException exception) {
+        log.info("the \"element not found\" handler has just caught exception");
         return new ErrorResponse(exception.getMessage());
     }
 

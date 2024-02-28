@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    Film addFilmToStorage(Film film) throws ValidationException;
+    Film addFilm(Film film) throws ValidationException;
 
-    Film deleteFilmFromStorage(int id);
+    Film deleteFilmById(int id);
 
-    Film updateFilmInStorage(Film film) throws ValidationException;
+    Film updateFilm(Film film) throws ValidationException;
 
-    Film getFilmFromStorage(int id);
+    Film getFilmById(int id);
 
     List<Film> getFilms();
 
