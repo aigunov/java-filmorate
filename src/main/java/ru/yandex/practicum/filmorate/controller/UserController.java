@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public User getUser(@PathVariable int id) throws ElementNotFoundException {
+    public User getUser(@PathVariable int id) {
         return userService.getUserById(id);
     }
 
@@ -52,7 +53,7 @@ public class UserController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@RequestBody User user) throws ValidationException {
+    public User addUser(@Valid @RequestBody User user) {
         return userService.addUser(user);
     }
 
@@ -64,7 +65,7 @@ public class UserController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public User updateUser(@RequestBody User user) throws ValidationException {
+    public User updateUser(@Valid @RequestBody User user) {
         return userService.updateUser(user);
     }
 
@@ -75,7 +76,7 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public User deleteUser(@PathVariable int id) throws ElementNotFoundException {
+    public User deleteUser(@PathVariable int id) {
         return userService.removeUser(id);
     }
 
@@ -109,7 +110,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public User deleteFriend(
             @PathVariable int id,
-            @PathVariable int friendId) throws UserFriendException, ElementNotFoundException {
+            @PathVariable int friendId) {
         return userService.removeFriend(id, friendId);
     }
 
@@ -121,7 +122,7 @@ public class UserController {
      */
     @GetMapping("{id}/friends")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getFriends(@PathVariable int id) throws ElementNotFoundException {
+    public List<User> getFriends(@PathVariable int id) {
         return userService.getListOfFriends(id);
     }
 
@@ -137,7 +138,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public User getFriend(
             @PathVariable int id,
-            @PathVariable int friendId) throws ElementNotFoundException {
+            @PathVariable int friendId) {
         return userService.getFriendById(id, friendId);
     }
 
@@ -152,7 +153,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<User> getCommonFriends(
             @PathVariable int id,
-            @PathVariable int otherId) throws ElementNotFoundException {
+            @PathVariable int otherId) {
         return userService.getListOfCommonsFriends(id, otherId);
     }
 }

@@ -19,22 +19,21 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidatorException(ValidationException exception) {
-        log.info("the \"validation\" handler has just caught exception");
-
+        log.info("The request body contains invalid data, {}", exception.getMessage());
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleFilmLikeException(FilmLikeException exception) {
-        log.info("the \"film like\" handler has just caught exception");
+        log.info("Error when placing a like film {}", exception.getMessage());
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserFriendException(UserFriendException exception) {
-        log.info("the \"user friend\" handler has just caught exception");
+        log.info("Error when trying to add/remove a friend, {}", exception.getMessage());
         return new ErrorResponse(exception.getMessage());
     }
 
@@ -42,14 +41,14 @@ public class ErrorHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleElementNotFoundException(ElementNotFoundException exception) {
-        log.info("the \"element not found\" handler has just caught exception");
+        log.info("Error when trying to extract data, {}", exception.getMessage());
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowableException(Throwable exception) {
-        log.info("the \"throwable\" handler has just caught exception");
+        log.info("An unexpected error has occurred, unexpected behavior");
         return new ErrorResponse("unexpected error has occurred");
     }
 

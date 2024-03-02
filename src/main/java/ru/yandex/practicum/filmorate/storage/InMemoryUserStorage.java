@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
@@ -15,7 +14,7 @@ public class InMemoryUserStorage implements UserStorage {
     private int generatedId = 0;
 
     @Override
-    public User addUser(User user) throws ValidationException {
+    public User addUser(User user) {
         log.info("New user has just added {}", user);
         makeUserLoginAlsoName(user);
         Validator.userValidation(user);
@@ -26,7 +25,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) throws ValidationException {
+    public User updateUser(User user) {
         log.info("User's info has just updated {}", user);
         Validator.userValidation(user);
         if (users.containsKey(user.getId())) {

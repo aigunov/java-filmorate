@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +19,7 @@ import java.util.Set;
 @Builder
 public class Film {
     @NotEmpty
+    @NotBlank(message = "The movie name cannot be empty")
     private final String name;
     @NotEmpty
     private final String description;
@@ -31,6 +30,7 @@ public class Film {
     private final Set<Integer> likesId = new HashSet<>();
     private Integer id;
     @Positive
+    @PositiveOrZero(message = "The duration of the film should be positive")
     private int rate;
 
 

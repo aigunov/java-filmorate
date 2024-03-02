@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserFriendException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -34,18 +33,18 @@ public class UserService {
      * @throws UserFriendException
      * @throws ElementNotFoundException
      */
-    public User addFriend(Integer userId, Integer friendId) throws UserFriendException, ElementNotFoundException {
+    public User addFriend(Integer userId, Integer friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
         checkIfUserNotExist(user);
         checkIfUserNotExist(friend);
         if (user.getFriends().contains(friendId)) {
-            log.error(String.format("client cannot add the %s user to the friends list again", friend.getName()));
-            throw new UserFriendException(String.format("User with %d id is already your friend", friendId));
+            log.error("user cannot add another user to the friends list again");
+            throw new UserFriendException(String.format("user with id={} is already friend", friendId));
         }
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
-        log.error(String.format("client has just added the %s user as a friend", friend.getName()));
+        log.error(String.format("user has just added the user with id={} as a friend", friendId));
         return friend;
     }
 
@@ -58,14 +57,14 @@ public class UserService {
      * @throws UserFriendException
      * @throws ElementNotFoundException
      */
-    public User removeFriend(Integer userId, Integer friendId) throws UserFriendException, ElementNotFoundException {
+    public User removeFriend(Integer userId, Integer friendId) {
         User user = userStorage.getUserById(userId);
         User friend = userStorage.getUserById(friendId);
         checkIfUserNotExist(user);
         checkIfUserNotExist(friend);
         if (!user.getFriends().contains(friendId)) {
-            log.error(String.format("client cannot remove the %s user who is not his friend from the friends list", friend.getName()));
-            throw new UserFriendException(String.format("User with %d id is not your friend", friendId));
+            log.error("user cannot remove user with id= {} from the friends list", friendId);
+            throw new UserFriendException(String.format("user with id={} is not a friend", friendId));
         }
         user.getFriends().remove(friendId);
         friend.getFriends().remove(userId);
@@ -78,10 +77,10 @@ public class UserService {
      * @return the list of user's friends
      * @throws ElementNotFoundException
      */
-    public List<User> getListOfFriends(Integer id) throws ElementNotFoundException {
+    public List<User> getListOfFriends(Integer id) {
         User user = userStorage.getUserById(id);
         checkIfUserNotExist(user);
-        log.info("client has just got the list of his friends");
+        log.info("user has just got the list of his friends");
         return user.getFriends().stream().map(userStorage::getUserById).collect(Collectors.toList());
     }
 
@@ -90,10 +89,9 @@ public class UserService {
      * @param friendId of the user of the object
      * @throws ElementNotFoundException
      */
-    public User getFriendById(Integer id, Integer friendId) throws ElementNotFoundException {
+    public User getFriendById(Integer id, Integer friendId) {
         User user = userStorage.getUserById(id);
         checkIfUserNotExist(user);
-        log.info("client has just got a friend");
         return userStorage.getUserById(user.getFriends().get(friendId));
     }
 
@@ -104,13 +102,13 @@ public class UserService {
      * @param otherId of the user of the object
      * @throws ElementNotFoundException
      */
-    public List<User> getListOfCommonsFriends(Integer id, Integer otherId) throws ElementNotFoundException {
+    public List<User> getListOfCommonsFriends(Integer id, Integer otherId) {
         User user = userStorage.getUserById(id);
         User friend = userStorage.getUserById(otherId);
         checkIfUserNotExist(user);
         checkIfUserNotExist(friend);
         if (!user.getFriends().isEmpty() && !friend.getFriends().isEmpty()) {
-            log.info(String.format("client has just got the list of common friends with the %s user", friend.getName()));
+            log.info(String.format("user going to get the list of common friends of user with id={}", otherId));
             return userStorage.getUsers().stream()
                     .filter(user1 -> (user1.getFriends().contains(user.getId()) && user1.getFriends().contains(friend.getId())) &&
                             (!user1.equals(user.getId()) && !user1.equals(friend.getId()))).collect(Collectors.toList());
@@ -120,21 +118,21 @@ public class UserService {
 
     }
 
-    public User getUserById(Integer id) throws ElementNotFoundException {
+    public User getUserById(Integer id) {
         checkIfUserNotExist(userStorage.getUserById(id));
         return userStorage.getUserById(id);
 
     }
 
-    public User addUser(User user) throws ValidationException {
+    public User addUser(User user) {
         return userStorage.addUser(user);
     }
 
-    public User updateUser(User user) throws ValidationException {
+    public User updateUser(User user) {
         return userStorage.updateUser(user);
     }
 
-    public User removeUser(Integer id) throws ElementNotFoundException {
+    public User removeUser(Integer id) {
         checkIfUserNotExist(userStorage.getUserById(id));
         return userStorage.deleteUserById(id);
     }

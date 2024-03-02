@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class FilmController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Film getFilm(@PathVariable int id) throws ElementNotFoundException {
+    public Film getFilm(@PathVariable int id) {
         return filmService.getFilmById(id);
     }
 
@@ -55,7 +56,7 @@ public class FilmController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Film addFilm(@RequestBody Film film) throws ValidationException {
+    public Film addFilm(@Valid @RequestBody Film film) {
         return filmService.addNewFilm(film);
     }
 
@@ -66,7 +67,7 @@ public class FilmController {
      */
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public Film updateFilm(@RequestBody Film film) throws ValidationException {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.updateFilm(film);
     }
 
@@ -77,7 +78,7 @@ public class FilmController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Film deleteFilm(@PathVariable int id) throws ElementNotFoundException {
+    public Film deleteFilm(@PathVariable int id) {
         return filmService.removeFilm(id);
     }
 
@@ -90,7 +91,7 @@ public class FilmController {
      */
     @PutMapping("{id}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public Film putLike(@PathVariable int id, @PathVariable int userId) throws FilmLikeException, ElementNotFoundException {
+    public Film putLike(@PathVariable int id, @PathVariable int userId) {
         return filmService.putLike(id, userId);
     }
 
@@ -103,7 +104,7 @@ public class FilmController {
      */
     @DeleteMapping("{id}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public Film removeLike(@PathVariable int id, @PathVariable int userId) throws FilmLikeException, ElementNotFoundException {
+    public Film removeLike(@PathVariable int id, @PathVariable int userId) {
         return filmService.removeLike(id, userId);
     }
 
