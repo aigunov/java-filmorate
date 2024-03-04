@@ -1,12 +1,17 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.exception.FilmLikeException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.validator.Validator;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.*;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Accepts POST, PUT, GET requests at /films
@@ -15,15 +20,33 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private int generatedId = 0;
+
+    private final FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     /**
      * @return List of all films
      */
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<Film> getFilms() {
-        log.info("Client get list of all films");
-        return new ArrayList<>(films.values());
+        return filmService.getFilms();
+    }
+
+
+    /**
+     * @param id of the film to return
+     * @return film by id
+     * @throws ElementNotFoundException
+     */
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Film getFilm(@PathVariable int id) {
+        return filmService.getFilmById(id);
     }
 
     /**
@@ -31,10 +54,10 @@ public class FilmController {
      * @return added film
      * @throws ValidationException if the film's values are invalid
      */
-
     @PostMapping
-    public Film addFilm(@RequestBody Film film) throws ValidationException {
-
+    @ResponseStatus(HttpStatus.CREATED)
+    public Film addFilm(@Valid @RequestBody Film film) {
+        return filmService.addNewFilm(film);
     }
 
     /**
@@ -42,16 +65,56 @@ public class FilmController {
      * @return updated film
      * @throws ValidationException if the film's values are invalid
      */
-    @ExceptionHandler(ValidationException.class)
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) throws ValidationException {
-
+    @ResponseStatus(HttpStatus.OK)
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        return filmService.updateFilm(film);
     }
 
     /**
-     * @return generated id for new film
+     * @param id of the film to delete
+     * @return deleted film
+     * @throws ElementNotFoundException
      */
-    private int generatorId() {
-        return ++generatedId;
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Film deleteFilm(@PathVariable int id) {
+        return filmService.removeFilm(id);
+    }
+
+    /**
+     * @param id     of the film to like
+     * @param userId of user who like the film
+     * @return the film that user liked
+     * @throws FilmLikeException
+     * @throws ElementNotFoundException
+     */
+    @PutMapping("{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Film putLike(@PathVariable int id, @PathVariable int userId) {
+        return filmService.putLike(id, userId);
+    }
+
+    /**
+     * @param id     a film from like was deleted
+     * @param userId a user who remove his like
+     * @return the film which was unliked
+     * @throws FilmLikeException
+     * @throws ElementNotFoundException
+     */
+    @DeleteMapping("{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Film removeLike(@PathVariable int id, @PathVariable int userId) {
+        return filmService.removeLike(id, userId);
+    }
+
+    /**
+     * @param count of the most popular films from the list that need to be returned
+     * @return the list of most popular films size equal to count @RequestParam
+     */
+    @GetMapping("/popular")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        return filmService.getTopPopularFilms(count);
     }
 }
