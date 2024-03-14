@@ -6,6 +6,8 @@ import org.junit.jupiter.api.function.Executable;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.utils.Genre;
+import ru.yandex.practicum.filmorate.utils.Rating;
 
 import java.time.LocalDate;
 
@@ -23,12 +25,12 @@ class ValidatorTest {
     @BeforeAll
     public static void setUp() {
         //films set up values
-        correctFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4);
-        futureFilm = new Film("Forest", "RUN FOREST", LocalDate.now().plusDays(20), 190, 1, 4);
-        pastFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1895, 12, 20), 190, 1, 4);
-        emptyNameFilm = new Film("", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4);
-        over200SymbolsFilm = new Film("Forest", over200SymbolsString, LocalDate.of(1990, 9, 28), 190, 1, 4);
-        negativeDurationFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), -1, 1, 4);
+        correctFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4, Genre.NONGENRE, Rating.NONRATING);
+        futureFilm = new Film("Forest", "RUN FOREST", LocalDate.now().plusDays(20), 190, 1, 4, Genre.NONGENRE, Rating.NONRATING);
+        pastFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1895, 12, 20), 190, 1, 4, Genre.NONGENRE, Rating.NONRATING);
+        emptyNameFilm = new Film("", "RUN FOREST", LocalDate.of(1990, 9, 28), 190, 1, 4, Genre.NONGENRE, Rating.NONRATING);
+        over200SymbolsFilm = new Film("Forest", over200SymbolsString, LocalDate.of(1990, 9, 28), 190, 1, 4, Genre.NONGENRE, Rating.NONRATING);
+        negativeDurationFilm = new Film("Forest", "RUN FOREST", LocalDate.of(1990, 9, 28), -1, 1, 4, Genre.NONGENRE, Rating.NONRATING);
 
         //users set up values
         correctUser = new User(1, "mr-white@yandex.ru", "mr-white", "MrWhite", LocalDate.of(2000, 9, 29));
