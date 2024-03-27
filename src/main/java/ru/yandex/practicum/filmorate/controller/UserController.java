@@ -1,12 +1,17 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserFriendException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.Validator;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.*;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Accept POST, PUT, GET requests to /users
@@ -15,15 +20,30 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private int generatedId = 0;
+
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
-     * @return list of all users
+     * @return the list of all users
      */
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<User> getUsers() {
-        log.info("Client get list of all users");
-        return new ArrayList<>(users.values());
+        return userService.getUsers();
+    }
+
+    /**
+     * @return the user
+     */
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getUser(@PathVariable int id) {
+        return userService.getUserById(id);
     }
 
     /**
@@ -31,11 +51,10 @@ public class UserController {
      * @return dded user
      * @throws ValidationException if the user's values are invalid
      */
-
-    @ExceptionHandler(ValidationException.class)
     @PostMapping
-    public User addUser(@RequestBody User user) throws ValidationException {
-
+    @ResponseStatus(HttpStatus.CREATED)
+    public User addUser(@Valid @RequestBody User user) {
+        return userService.addUser(user);
     }
 
     /**
@@ -44,27 +63,97 @@ public class UserController {
      * @throws ValidationException if the user's values are invalid
      */
 
-    @ExceptionHandler(ValidationException.class)
     @PutMapping
-    public User updateUser(@RequestBody User user) throws ValidationException {
-
+    @ResponseStatus(HttpStatus.OK)
+    public User updateUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user);
     }
 
     /**
-     * @return generated id for new user
+     * @param id of the user's data to delete
+     * @return the deleted user object
+     * @throws ElementNotFoundException
      */
-    private int generatorId() {
-        return ++generatedId;
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public User deleteUser(@PathVariable int id) {
+        return userService.removeUser(id);
     }
 
     /**
-     * sets the login as a username if the username is empty
+     * the endpoint method for adding a user as a friend
      *
-     * @param user is object to check if field username if empty
+     * @param id       of the user of the subject
+     * @param friendId of the user of the object
+     * @return object of friendId's data
+     * @throws UserFriendException
+     * @throws ElementNotFoundException
      */
-    private void makeUserLoginAlsoName(User user) {
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
+    @PutMapping("{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public User addFriend(
+            @PathVariable int id,
+            @PathVariable int friendId) throws UserFriendException, ElementNotFoundException {
+        return userService.addFriend(id, friendId);
+    }
+
+    /**
+     * the endpoint method allows one user to remove their friends from the list
+     *
+     * @param id       of the user of the subject
+     * @param friendId of the user of the object
+     * @return object of friendId's data
+     * @throws UserFriendException
+     * @throws ElementNotFoundException
+     */
+    @DeleteMapping("{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public User deleteFriend(
+            @PathVariable int id,
+            @PathVariable int friendId) {
+        return userService.removeFriend(id, friendId);
+    }
+
+    /**
+     * the endpoint method returns a list of the user's friends
+     *
+     * @param id of the user of the subject
+     * @throws ElementNotFoundException
+     */
+    @GetMapping("{id}/friends")
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> getFriends(@PathVariable int id) {
+        return userService.getListOfFriends(id);
+    }
+
+    /**
+     * the endpoint method return the user's friend by his id
+     *
+     * @param id       of the user who get information
+     * @param friendId of the friend-user
+     * @return data object of friend
+     * @throws ElementNotFoundException
+     */
+    @GetMapping("{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getFriend(
+            @PathVariable int id,
+            @PathVariable int friendId) {
+        return userService.getFriendById(id, friendId);
+    }
+
+    /**
+     * the endpoint method return the list of mutual friends for two different users
+     *
+     * @param id      of the user of the subject
+     * @param otherId of the user of the object
+     * @throws ElementNotFoundException
+     */
+    @GetMapping("{id}/friends/common/{otherId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> getCommonFriends(
+            @PathVariable int id,
+            @PathVariable int otherId) {
+        return userService.getListOfCommonsFriends(id, otherId);
     }
 }
