@@ -53,7 +53,8 @@ public class UserController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@Valid @RequestBody User user) {
+    public User addUser(@RequestBody User user) {
+        log.info("USER to add: " + user);
         return userService.addUser(user);
     }
 
@@ -65,7 +66,8 @@ public class UserController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public User updateUser(@Valid @RequestBody User user) {
+    public User updateUser(@RequestBody User user) {
+        log.info("USER to update: " + user);
         return userService.updateUser(user);
     }
 

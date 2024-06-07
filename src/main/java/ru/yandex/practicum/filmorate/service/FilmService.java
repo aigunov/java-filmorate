@@ -7,25 +7,33 @@ import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmLikeException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.*;
+import ru.yandex.practicum.filmorate.storage.users_logic.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.validator.Validator;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
 
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final FilmStorage filmsDB;
+    private final UserStorage usersDB;
+    private final FilmsLikeStorage likedFilmsDb;
+    private final GenreStorage genreDB;
+    private final MPAStorage MPADB;
+    private final FilmGenreStorage filmGenreDB;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+    public FilmService(FilmStorage filmsDB, UserStorage usersDB, FilmsLikeStorage likedFilmsDb, GenreStorage genreDB, MPAStorage mpadb, FilmGenreStorage filmGenreDB) {
+        this.filmsDB = filmsDB;
+        this.usersDB = usersDB;
+        this.likedFilmsDb = likedFilmsDb;
+        this.genreDB = genreDB;
+        MPADB = mpadb;
+        this.filmGenreDB = filmGenreDB;
     }
 
     /**
@@ -37,19 +45,9 @@ public class FilmService {
      * @throws FilmLikeException
      * @throws ElementNotFoundException
      */
-    public Film putLike(Integer filmId, Integer userId) {
-        User user = userStorage.getUserById(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        checkIfFilmExist(film);
-        checkIfUserExist(user);
-        if (user.getLikedFilms().contains(film.getId())) {
-            log.error("user can't like the film more than once");
-            throw new FilmLikeException(String.format("user with id={} has already like the film with id={}", userId, filmId));
-        }
-        user.getLikedFilms().add(film.getId());
-        film.getLikesId().add(userId);
-        log.info("user with id={} just liked film with id={}", userId, filmId);
-        return film;
+    public void putLike(Integer filmId, Integer userId) {
+        likedFilmsDb.addLike(filmId, userId);
+        log.info("Пользователь с id:" + userId + " поставил лайк фильму с id:" + filmId);
     }
 
     /**
@@ -61,19 +59,9 @@ public class FilmService {
      * @throws FilmLikeException
      * @throws ElementNotFoundException
      */
-    public Film removeLike(Integer filmId, Integer userId) {
-        User user = userStorage.getUserById(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        checkIfFilmExist(film);
-        checkIfUserExist(user);
-        if (!user.getLikedFilms().contains(film.getId())) {
-            log.error("user can't remove the like from the film ");
-            throw new FilmLikeException(String.format("user with id={} hasn't like the film with id={}", userId, filmId));
-        }
-        user.getLikedFilms().remove(film.getId());
-        film.getLikesId().remove(userId);
-        log.error("User with id={} just unliked film with id={}", userId, filmId);
-        return film;
+    public void removeLike(Integer filmId, Integer userId) {
+        likedFilmsDb.removeLike(filmId, userId);
+        log.info("Пользователь с id:" + userId + " удалил свой лайк фильму с id:" + filmId);
     }
 
     /**
@@ -83,50 +71,61 @@ public class FilmService {
      * @return
      */
     public List<Film> getTopPopularFilms(int size) {
-        log.info("user has got the list of most popular films");
-        return filmStorage.getFilms().stream()
-                .sorted(Comparator.comparing(film -> ((Film) film).getLikesId().size()).reversed())
-                .limit(size)
-                .collect(Collectors.toList());
+        List<Film> popularFilms = filmsDB.getPopularFilms(size);
+        log.info("Запрос на получение популярных фильмов обработан");
+        return popularFilms;
     }
 
 
     public List<Film> getFilms() {
-        log.info("user has got the list of all films");
-        return filmStorage.getFilms();
+        log.info("Обработан запрос на получение списка всех фильмов");
+        return filmsDB.getFilms();
     }
 
     public Film getFilmById(Integer id) {
-        Film film = filmStorage.getFilmById(id);
-        checkIfFilmExist(film);
+        Film film = filmsDB.getFilmById(id)
+                .orElseThrow(() -> new NoSuchElementException("Фильм с ID: " + id + " не найден."));
+        Map<Integer, Set<Genre>> filmsGenres = filmGenreDB.findGenreOfFilm(List.of(film));
+
+        film.setGenres(filmsGenres.get(film.getId()) != null ?
+                (LinkedHashSet<Genre>) filmsGenres.get(film.getId()) : new LinkedHashSet<>());
+
+        film.setMpa(MPADB.getMPAofFilm(film.getId()));
+        log.info("Обработан запрос на по поиску фильма. Найден фильм: {}.", film);
         return film;
     }
 
     public Film addNewFilm(Film film) {
-        return filmStorage.addFilm(film);
+        Validator.filmValidation(film);
+        film.setId(filmsDB.addFilm(film).getId());
+        filmGenreDB.addGenreToFilm(film, film.getGenres()!=null? film.getGenres():Set.of());
+        log.info("Фильм {} добавлен в базу данных", film);
+        return film;
     }
 
     public Film updateFilm(Film film) throws ValidationException {
-        return filmStorage.updateFilm(film);
+        Validator.filmValidation(film);
+        if (filmsDB.getFilmById(film.getId()).isEmpty()) {
+            throw new NoSuchElementException("Фильма с ID=" + film.getId() + " нет в базе");
+        }
+        filmGenreDB.removeGenreFromFilm(film.getId());
+        filmsDB.updateFilm(film);
+
+        filmGenreDB.addGenreToFilm(film, film.getGenres());
+
+        log.info("Обновлен фильм: {}", film);
+        return film;
     }
 
     public Film removeFilm(Integer id) {
-        Film film = filmStorage.getFilmById(id);
-        checkIfFilmExist(film);
-        return filmStorage.deleteFilmById(id);
+        Optional<Film> film = filmsDB.getFilmById(id);
+        if(film.isEmpty()){
+            throw new NoSuchElementException("Фильма с ID=" + film.get().getId() + " нет в базе");
+        }
+
+        filmGenreDB.removeGenreFromFilm(id);
+        filmsDB.deleteFilmById(id);
+        return film.get();
     }
 
-    public void checkIfFilmExist(Film film) {
-        if (film == null) {
-            log.error("this film is not exist to return, probably the path variables incorrect");
-            throw new ElementNotFoundException("this film is not exist");
-        }
-    }
-
-    public void checkIfUserExist(User user) {
-        if (user == null) {
-            log.error("this user is not exist to return, probably the path variables incorrect");
-            throw new ElementNotFoundException("this user is not exist");
-        }
-    }
 }
