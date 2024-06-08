@@ -36,10 +36,10 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public User addFriend(Integer userId, Integer friendId) {
-        User user = userDB.getUser(userId).
-                orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
-        User friend = userDB.getUser(friendId).
-                orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
+        User user = userDB.getUser(userId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
+        User friend = userDB.getUser(friendId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
         friendshipDB.addFriend(userId, friendId);
         log.info("Пользователи :" + user.getName() + " и " + friend.getName() + " - подружились");
         return friend;
@@ -55,10 +55,10 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public User removeFriend(Integer userId, Integer friendId) {
-        User user = userDB.getUser(userId).
-                orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
-        User friend = userDB.getUser(friendId).
-                orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
+        User user = userDB.getUser(userId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
+        User friend = userDB.getUser(friendId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
         friendshipDB.deleteFriend(userId, friendId);
         log.info("Пользователи:" + user.getName() + " и " + friend.getName() + " - прекратили дружбу!");
         return friend;
@@ -83,10 +83,10 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public User getFriendById(Integer userId, Integer friendId) {
-        User user = userDB.getUser(userId).
-                orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
-        User friend = userDB.getUser(friendId).
-                orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
+        User user = userDB.getUser(userId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
+        User friend = userDB.getUser(friendId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
         if (!user.getFriends().contains(friendId)) {
             throw new UserFriendException(String.format("Пользователь {} не дружит с пользователем {}", user, friend));
         }
@@ -102,10 +102,10 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public List<User> getListOfCommonsFriends(Integer id, Integer otherId) {
-        User user1 = userDB.getUser(id).
-                orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + id + " не найден"));
-        User user2 = userDB.getUser(otherId).
-                orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + otherId + " не найден"));
+        User user1 = userDB.getUser(id)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + id + " не найден"));
+        User user2 = userDB.getUser(otherId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + otherId + " не найден"));
         List<User> mutualFriends = friendshipDB.getMutualFriend(id, otherId);
         log.info("Запрос на получение списка общих друзей для пользователей обработан");
         return mutualFriends;
@@ -128,7 +128,6 @@ public class UserService {
     public User updateUser(User user) {
         User oldUser = userDB.getUser(user.getId())
                 .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
-//        friendshipDB.deleteUser(user.getId());
 
         log.info("Обновлен пользователь: {}", user);
         return userDB.updateUser(user);
@@ -138,7 +137,6 @@ public class UserService {
         User user = userDB.getUser(id)
                 .orElseThrow(() -> new NoSuchElementException("Пользователь с id = " + id + " не найден"));
         log.info("Пользователь {} удален", user.getName());
-//        friendshipDB.deleteFriend(user.getId(), id);
         return userDB.deleteUser(id);
     }
 
