@@ -31,7 +31,8 @@ public class FilmGenreDB implements FilmGenreStorage {
     public void addGenreToFilm(Film film, Set<Genre> genres) {
         jdbc.batchUpdate("INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
-                    Iterator<Genre> iterator = genres.iterator();
+                    final Iterator<Genre> iterator = genres.iterator();
+
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         ps.setInt(1, film.getId());

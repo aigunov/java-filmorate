@@ -48,10 +48,10 @@ public class UserDB implements UserStorage {
     @Override
     public User updateUser(User user) {
         jdbc.update("""
-                UPDATE users
-                SET name = ?, login = ?, email = ?, birthday = ?
-                WHERE id = ?
-                """, user.getName(), user.getLogin(), user.getEmail(),
+                        UPDATE users
+                        SET name = ?, login = ?, email = ?, birthday = ?
+                        WHERE id = ?
+                        """, user.getName(), user.getLogin(), user.getEmail(),
                 user.getBirthday(), user.getId());
         return user;
     }

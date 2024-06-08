@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.users_logic.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -98,7 +97,7 @@ public class FilmService {
     public Film addNewFilm(Film film) {
         Validator.filmValidation(film);
         film.setId(filmsDB.addFilm(film).getId());
-        filmGenreDB.addGenreToFilm(film, film.getGenres()!=null? film.getGenres():Set.of());
+        filmGenreDB.addGenreToFilm(film, film.getGenres() != null ? film.getGenres() : Set.of());
         log.info("Фильм {} добавлен в базу данных", film);
         return film;
     }
@@ -119,7 +118,7 @@ public class FilmService {
 
     public Film removeFilm(Integer id) {
         Optional<Film> film = filmsDB.getFilmById(id);
-        if(film.isEmpty()){
+        if (film.isEmpty()) {
             throw new NoSuchElementException("Фильма с ID=" + film.get().getId() + " нет в базе");
         }
 

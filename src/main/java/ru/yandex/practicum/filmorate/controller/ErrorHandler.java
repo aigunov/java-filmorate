@@ -21,7 +21,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidatorException(Exception exception ) {
+    public ErrorResponse handleValidatorException(Exception exception) {
         log.info("The request body contains invalid data, {}", exception.getMessage());
         return new ErrorResponse("Запрос содержит не допустимые данные");
     }
@@ -58,7 +58,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowableException(Throwable exception) {
-        log.info("An unexpected error has occurred, unexpected behavior: "+ exception.getMessage());
+        log.info("An unexpected error has occurred, unexpected behavior: " + exception.getMessage());
         return new ErrorResponse("unexpected error has occurred");
     }
 

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.future.FutureValidatorForReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
@@ -13,7 +12,6 @@ import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -89,7 +87,7 @@ public class UserService {
                 orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
         User friend = userDB.getUser(friendId).
                 orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
-        if(!user.getFriends().contains(friendId)) {
+        if (!user.getFriends().contains(friendId)) {
             throw new UserFriendException(String.format("Пользователь {} не дружит с пользователем {}", user, friend));
         }
         log.info("Пользователь {} получил информацию о друге-пользователе {}", user.getName(), friend.getName());
@@ -104,7 +102,7 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public List<User> getListOfCommonsFriends(Integer id, Integer otherId) {
-        User user1= userDB.getUser(id).
+        User user1 = userDB.getUser(id).
                 orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + id + " не найден"));
         User user2 = userDB.getUser(otherId).
                 orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + otherId + " не найден"));

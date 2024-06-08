@@ -73,7 +73,7 @@ public class MPADB implements MPAStorage {
                 WHERE f.id = ?
                 """, filmdId);
 
-        return rs.next()? MPA.builder().id(rs.getInt("rating_id")).
+        return rs.next() ? MPA.builder().id(rs.getInt("rating_id")).
                 name(rs.getString("rating")).build() : null;
     }
 

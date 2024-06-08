@@ -17,14 +17,14 @@ public class MPAService {
     private final MPAStorage mpaStorage;
 
     public Collection<MPA> getAllMpa() {
-        List<MPA> allMPA =  mpaStorage.getAllMPA();
+        List<MPA> allMPA = mpaStorage.getAllMPA();
         log.info("Запрос на список всех MPA. Результат: {}", allMPA);
         return allMPA;
     }
 
     public MPA getMpaById(int id) {
         MPA mpa = mpaStorage.getMPA(id)
-                .orElseThrow(() ->new NoSuchElementException("MPA с ID = "+id+" не найден"));
+                .orElseThrow(() -> new NoSuchElementException("MPA с ID = " + id + " не найден"));
         return mpa;
     }
 }

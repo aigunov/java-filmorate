@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.films_logic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
@@ -14,7 +13,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository("filmDB")
 public class FilmDB implements FilmStorage {
@@ -24,6 +22,7 @@ public class FilmDB implements FilmStorage {
     public FilmDB(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
+
     @Override
     public Film addFilm(Film film) {
         Map<String, Object> columns = new SimpleJdbcInsert(this.jdbc)
@@ -36,12 +35,12 @@ public class FilmDB implements FilmStorage {
                         "release_date", film.getReleaseDate(),
                         "duration", film.getDuration(),
                         "rate", film.getRate(),
-                        "rating_id", (film.getMpa()!=null && film.getMpa().getId()!=0
-                                ?film.getMpa().getId():1)
+                        "rating_id", (film.getMpa() != null && film.getMpa().getId() != 0
+                                ? film.getMpa().getId() : 1)
                 )).getKeys();
         film.setId((Integer) columns.get("id"));
-        film.setMpa(film.getMpa()==null?
-                MPA.builder().id(1).name("PG-13").build():film.getMpa());
+        film.setMpa(film.getMpa() == null ?
+                MPA.builder().id(1).name("PG-13").build() : film.getMpa());
         return film;
     }
 
@@ -57,7 +56,7 @@ public class FilmDB implements FilmStorage {
     public Film updateFilm(Film film) {
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?," +
                 " duration = ?, rating_id = ? WHERE id = ?";
-        jdbc.update(sqlQuery,  film.getName(), film.getDescription(), film.getReleaseDate(),
+        jdbc.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
 
         return film;
@@ -81,7 +80,7 @@ public class FilmDB implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(int size){
+    public List<Film> getPopularFilms(int size) {
         return jdbc.query("""
                 SELECT f.*, mpa.rating_id AS mpa_id, mpa.rating AS mpa_name, COUNT(lf.user_id) AS likes
                 FROM films AS f
