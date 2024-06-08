@@ -60,8 +60,8 @@ public class GenreDB implements GenreStorage {
     @Override
     public Optional<Genre> getGenre(int id) {
         List<Genre> genres = jdbc.query("""
-                SELECT * 
-                FROM genre 
+                SELECT *
+                FROM genre
                 WHERE genre_id = ?
                 """, this::mapRowToGenre, id);
         return genres.stream().findFirst();
@@ -70,8 +70,8 @@ public class GenreDB implements GenreStorage {
     @Override
     public List<Genre> getGenres() {
         return jdbc.query("""
-                SELECT * 
-                FROM genre            
+                SELECT *
+                FROM genre           
                 """, this::mapRowToGenre);
     }
 

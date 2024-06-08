@@ -33,7 +33,7 @@ public class FriendshipDB implements FriendshipStorage {
     @Override
     public void deleteFriend(int id1, int id2) {
         jdbc.update("""
-                DELETE FROM friendship 
+                DELETE FROM friendship
                 WHERE user_id = ? AND friend_id = ?
                 """, id1, id2);
     }
@@ -45,14 +45,14 @@ public class FriendshipDB implements FriendshipStorage {
                 SELECT us.*
                 FROM friendship AS fr
                 LEFT JOIN users AS us ON fr.friend_id = us.id
-                WHERE fr.user_id = ? 
+                WHERE fr.user_id = ?
                 """, this::mapRowToUser, id);
     }
 
     @Override
     public List<User> getMutualFriend(int id1, int id2) {
         String sqlQuery = """
-                SELECT fr1.friend_id 
+                SELECT fr1.friend_id
                 FROM friendship AS fr1
                 INNER JOIN friendship AS fr2 ON fr1.friend_id = fr2.friend_id
                 WHERE fr1.user_id = ? AND fr2.user_id = ?

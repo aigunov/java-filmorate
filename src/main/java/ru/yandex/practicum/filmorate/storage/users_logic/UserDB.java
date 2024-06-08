@@ -59,8 +59,8 @@ public class UserDB implements UserStorage {
     @Override
     public Optional<User> getUser(Integer id) {
         return jdbc.query("""
-                SELECT * 
-                FROM users 
+                SELECT *
+                FROM users
                 WHERE id = ?
                 """, this::mapRowToUser, id).stream().findFirst();
     }
