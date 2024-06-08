@@ -31,7 +31,7 @@ public class FilmGenreDB implements FilmGenreStorage {
     public void addGenreToFilm(Film film, Set<Genre> genres) {
         jdbc.batchUpdate("INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
-                    final Iterator<Genre> iterator = genres.iterator();
+                    Iterator<Genre> iterator = genres.iterator();
 
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -65,8 +65,8 @@ public class FilmGenreDB implements FilmGenreStorage {
                         LEFT JOIN genre AS ge ON fg.genre_id = ge.genre_id
                         WHERE film_id IN (%S)
                         ORDER BY fg.film_id, fg.genre_id
-                        """
-                , placeholders);
+                        """,
+                placeholders);
 
         SqlRowSet rs = jdbc.queryForRowSet(sqlQuery, filmsID.toArray());
 
