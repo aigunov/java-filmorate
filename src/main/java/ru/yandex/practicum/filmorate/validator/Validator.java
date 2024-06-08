@@ -21,7 +21,7 @@ public class Validator {
                 film.getDescription().length() >= MAX_DESCRIPTION_LENGTH ||
                 film.getReleaseDate().isBefore(EARLIEST_DATE) ||
                 film.getDuration() <= 0 || film.getReleaseDate().isAfter(LocalDate.now()) ||
-                film.getMpa().getId()>5 || film.getMpa().getId()<1) {
+                film.getMpa().getId() > 5 || film.getMpa().getId() < 1) {
             log.warn("The film from request's body is invalid, check it's data {}", film);
             throw new ValidationException("Invalid fields values for film");
         }

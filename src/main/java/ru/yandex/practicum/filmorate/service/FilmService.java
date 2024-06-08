@@ -8,7 +8,10 @@ import ru.yandex.practicum.filmorate.exception.FilmLikeException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.*;
+import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmGenreStorage;
+import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmsLikeStorage;
+import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.MPAStorage;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.*;
