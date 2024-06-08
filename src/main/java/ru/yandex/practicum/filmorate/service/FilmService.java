@@ -19,14 +19,14 @@ public class FilmService {
 
     private final FilmStorage filmsDB;
     private final FilmsLikeStorage likedFilmsDB;
-    private final MPAStorage MPA_DB;
+    private final MPAStorage mpaDB;
     private final FilmGenreStorage filmGenreDB;
 
     @Autowired
-    public FilmService(FilmStorage filmsDB, FilmsLikeStorage likedFilmsDB, MPAStorage MPA_DB, FilmGenreStorage filmGenreDB) {
+    public FilmService(FilmStorage filmsDB, FilmsLikeStorage likedFilmsDB, MPAStorage mpaDB, FilmGenreStorage filmGenreDB) {
         this.filmsDB = filmsDB;
         this.likedFilmsDB = likedFilmsDB;
-        this.MPA_DB = MPA_DB;
+        this.mpaDB = mpaDB;
         this.filmGenreDB = filmGenreDB;
     }
 
@@ -84,7 +84,7 @@ public class FilmService {
         film.setGenres(filmsGenres.get(film.getId()) != null ?
                 (LinkedHashSet<Genre>) filmsGenres.get(film.getId()) : new LinkedHashSet<>());
 
-        film.setMpa(MPA_DB.getMPAofFilm(film.getId()));
+        film.setMpa(mpaDB.getMPAofFilm(film.getId()));
         log.info("Обработан запрос на по поиску фильма. Найден фильм: {}.", film);
         return film;
     }
