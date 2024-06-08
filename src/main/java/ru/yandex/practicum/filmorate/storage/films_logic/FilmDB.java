@@ -65,9 +65,9 @@ public class FilmDB implements FilmStorage {
     @Override
     public Optional<Film> getFilmById(int id) {
         return jdbc.query("""
-                        SELECT films.* , mpa.rating_id, mpa.rating 
-                        FROM films 
-                        JOIN mpa ON films.rating_id = mpa.rating_id 
+                        SELECT films.* , mpa.rating_id, mpa.rating
+                        FROM films
+                        JOIN mpa ON films.rating_id = mpa.rating_id
                         WHERE films.id = ?
                         """, new Object[]{id},
                 this::mapRowToFilm).stream().findFirst();
