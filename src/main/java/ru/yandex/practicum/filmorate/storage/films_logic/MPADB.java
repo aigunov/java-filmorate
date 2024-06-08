@@ -73,8 +73,8 @@ public class MPADB implements MPAStorage {
                 WHERE f.id = ?
                 """, filmdId);
 
-        return rs.next() ? MPA.builder().id(rs.getInt("rating_id")).
-                name(rs.getString("rating")).build() : null;
+        return rs.next() ? MPA.builder().id(rs.getInt("rating_id"))
+                .name(rs.getString("rating")).build() : null;
     }
 
     private MPA mapRowToMPA(ResultSet rs, int i) throws SQLException {
