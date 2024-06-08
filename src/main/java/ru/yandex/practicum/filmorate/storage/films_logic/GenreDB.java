@@ -71,7 +71,7 @@ public class GenreDB implements GenreStorage {
     public List<Genre> getGenres() {
         return jdbc.query("""
                 SELECT *
-                FROM genre           
+                FROM genre
                 """, this::mapRowToGenre);
     }
 
