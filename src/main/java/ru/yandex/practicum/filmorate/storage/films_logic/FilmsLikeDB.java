@@ -16,8 +16,8 @@ public class FilmsLikeDB implements FilmsLikeStorage {
 
     @Override
     public void addLike(int filmId, int userId) {
-        jdbc.update("INSERT INTO liked_films (user_id, film_id) VALUES (?, ?)"
-                , userId, filmId);
+        jdbc.update("INSERT INTO liked_films (user_id, film_id) VALUES (?, ?)",
+                userId, filmId);
     }
 
     @Override

@@ -39,6 +39,7 @@ public class FriendshipDB implements FriendshipStorage {
     }
 
 
+
     @Override
     public List<User> getUserFriend(int id) {
         return jdbc.query("""
