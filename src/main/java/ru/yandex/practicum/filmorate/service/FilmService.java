@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.*;
-import ru.yandex.practicum.filmorate.storage.users_logic.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.*;
@@ -19,19 +18,15 @@ import java.util.*;
 public class FilmService {
 
     private final FilmStorage filmsDB;
-    private final UserStorage usersDB;
-    private final FilmsLikeStorage likedFilmsDb;
-    private final GenreStorage genreDB;
-    private final MPAStorage MPADB;
+    private final FilmsLikeStorage likedFilmsDB;
+    private final MPAStorage MPA_DB;
     private final FilmGenreStorage filmGenreDB;
 
     @Autowired
-    public FilmService(FilmStorage filmsDB, UserStorage usersDB, FilmsLikeStorage likedFilmsDb, GenreStorage genreDB, MPAStorage mpadb, FilmGenreStorage filmGenreDB) {
+    public FilmService(FilmStorage filmsDB, FilmsLikeStorage likedFilmsDB, MPAStorage MPA_DB, FilmGenreStorage filmGenreDB) {
         this.filmsDB = filmsDB;
-        this.usersDB = usersDB;
-        this.likedFilmsDb = likedFilmsDb;
-        this.genreDB = genreDB;
-        MPADB = mpadb;
+        this.likedFilmsDB = likedFilmsDB;
+        this.MPA_DB = MPA_DB;
         this.filmGenreDB = filmGenreDB;
     }
 
@@ -45,7 +40,7 @@ public class FilmService {
      * @throws ElementNotFoundException
      */
     public void putLike(Integer filmId, Integer userId) {
-        likedFilmsDb.addLike(filmId, userId);
+        likedFilmsDB.addLike(filmId, userId);
         log.info("Пользователь с id:" + userId + " поставил лайк фильму с id:" + filmId);
     }
 
@@ -59,7 +54,7 @@ public class FilmService {
      * @throws ElementNotFoundException
      */
     public void removeLike(Integer filmId, Integer userId) {
-        likedFilmsDb.removeLike(filmId, userId);
+        likedFilmsDB.removeLike(filmId, userId);
         log.info("Пользователь с id:" + userId + " удалил свой лайк фильму с id:" + filmId);
     }
 
@@ -89,7 +84,7 @@ public class FilmService {
         film.setGenres(filmsGenres.get(film.getId()) != null ?
                 (LinkedHashSet<Genre>) filmsGenres.get(film.getId()) : new LinkedHashSet<>());
 
-        film.setMpa(MPADB.getMPAofFilm(film.getId()));
+        film.setMpa(MPA_DB.getMPAofFilm(film.getId()));
         log.info("Обработан запрос на по поиску фильма. Найден фильм: {}.", film);
         return film;
     }
