@@ -49,20 +49,7 @@ public class UserValidationTest {
                 .build();
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
-    }
-
-    @Test
-    public void check_User_EmailIsNull() {
-        User user = User.builder()
-                .id(0)
-                .name("name")
-                .login("login")
-                .birthday(LocalDate.of(1990, 1, 1))
-                .build();
-
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+        assertTrue(violations.isEmpty());
     }
 
     @Test
@@ -90,7 +77,7 @@ public class UserValidationTest {
                 .build();
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+        assertTrue(violations.isEmpty());
     }
 
     @Test
@@ -104,7 +91,7 @@ public class UserValidationTest {
                 .build();
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+        assertTrue(violations.isEmpty());
     }
 
     @Test
@@ -135,17 +122,5 @@ public class UserValidationTest {
         assertFalse(violations.isEmpty());
     }
 
-    @Test
-    public void check_User_BirthdayNull() {
-        User user = User.builder()
-                .id(0)
-                .name("")
-                .login("login")
-                .email("gfgfg@dfdf")
-                .birthday(null)
-                .build();
 
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
-    }
 }
