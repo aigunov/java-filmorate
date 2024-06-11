@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.films_logic;
+package ru.yandex.practicum.filmorate.storage.films;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.MPA;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.MPAStorage;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.MPAStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

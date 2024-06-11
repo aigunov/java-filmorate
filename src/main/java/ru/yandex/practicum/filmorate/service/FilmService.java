@@ -8,10 +8,10 @@ import ru.yandex.practicum.filmorate.exception.FilmLikeException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmGenreStorage;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmsLikeStorage;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.MPAStorage;
+import ru.yandex.practicum.filmorate.storage.films.GenreDB;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.FilmsLikeStorage;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.GenreStorage;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.*;
@@ -22,15 +22,13 @@ public class FilmService {
 
     private final FilmStorage filmsDB;
     private final FilmsLikeStorage likedFilmsDB;
-    private final MPAStorage mpaDB;
-    private final FilmGenreStorage filmGenreDB;
+    private final GenreStorage genreDB;
 
     @Autowired
-    public FilmService(FilmStorage filmsDB, FilmsLikeStorage likedFilmsDB, MPAStorage mpaDB, FilmGenreStorage filmGenreDB) {
+    public FilmService(FilmStorage filmsDB, FilmsLikeStorage likedFilmsDB, GenreDB genreDB) {
         this.filmsDB = filmsDB;
         this.likedFilmsDB = likedFilmsDB;
-        this.mpaDB = mpaDB;
-        this.filmGenreDB = filmGenreDB;
+        this.genreDB = genreDB;
     }
 
     /**
@@ -82,12 +80,11 @@ public class FilmService {
     public Film getFilmById(Integer id) {
         Film film = filmsDB.getFilmById(id)
                 .orElseThrow(() -> new NoSuchElementException("Фильм с ID: " + id + " не найден."));
-        Map<Integer, Set<Genre>> filmsGenres = filmGenreDB.findGenreOfFilm(List.of(film));
+        Map<Integer, Set<Genre>> filmsGenres = genreDB.findGenreOfFilm(List.of(film));
 
         film.setGenres(filmsGenres.get(film.getId()) != null ?
                 (LinkedHashSet<Genre>) filmsGenres.get(film.getId()) : new LinkedHashSet<>());
 
-        film.setMpa(mpaDB.getMPAofFilm(film.getId()));
         log.info("Обработан запрос на по поиску фильма. Найден фильм: {}.", film);
         return film;
     }
@@ -95,7 +92,7 @@ public class FilmService {
     public Film addNewFilm(Film film) {
         Validator.filmValidation(film);
         film.setId(filmsDB.addFilm(film).getId());
-        filmGenreDB.addGenreToFilm(film, film.getGenres() != null ? film.getGenres() : Set.of());
+        genreDB.addGenreToFilm(film, film.getGenres() != null ? film.getGenres() : Set.of());
         log.info("Фильм {} добавлен в базу данных", film);
         return film;
     }
@@ -105,24 +102,22 @@ public class FilmService {
         if (filmsDB.getFilmById(film.getId()).isEmpty()) {
             throw new NoSuchElementException("Фильма с ID=" + film.getId() + " нет в базе");
         }
-        filmGenreDB.removeGenreFromFilm(film.getId());
+        genreDB.removeGenreFromFilm(film.getId());
         filmsDB.updateFilm(film);
 
-        filmGenreDB.addGenreToFilm(film, film.getGenres());
+        genreDB.addGenreToFilm(film, film.getGenres());
 
         log.info("Обновлен фильм: {}", film);
         return film;
     }
 
     public Film removeFilm(Integer id) {
-        Optional<Film> film = filmsDB.getFilmById(id);
-        if (film.isEmpty()) {
-            throw new NoSuchElementException("Фильма с ID=" + film.get().getId() + " нет в базе");
-        }
+        Film film = filmsDB.getFilmById(id)
+                .orElseThrow(() -> new NoSuchElementException("Фильма с ID=" + id + " нет в базе"));
 
-        filmGenreDB.removeGenreFromFilm(id);
+        genreDB.removeGenreFromFilm(id);
         filmsDB.deleteFilmById(id);
-        return film.get();
+        return film;
     }
 
 }

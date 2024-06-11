@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
-import ru.yandex.practicum.filmorate.storage.films_logic.FilmDB;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.films.FilmDB;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;

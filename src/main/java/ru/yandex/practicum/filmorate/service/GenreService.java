@@ -3,9 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.GenreStorage;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -19,7 +18,7 @@ public class GenreService {
         this.genreStorage = genreStorage;
     }
 
-    public Collection<Genre> getAllGenres() {
+    public List<Genre> getAllGenres() {
         List<Genre> genres = genreStorage.getGenres();
         log.info("Запрашивается список жанров. Результат: {}", genres);
         return genres;

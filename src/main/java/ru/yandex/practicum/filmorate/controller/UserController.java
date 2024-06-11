@@ -33,7 +33,10 @@ public class UserController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<User> getUsers() {
-        return userService.getUsers();
+        log.info("пришел запрос GET /users на получение списка всех фильмов");
+        List<User> users = userService.getUsers();
+        log.info("отправлен ответ на GET /users запрос с телом: {}", users);
+        return users;
     }
 
     /**
@@ -42,7 +45,10 @@ public class UserController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public User getUser(@PathVariable int id) {
-        return userService.getUserById(id);
+        log.info("пришел запрос GET /users/{id} на получение пользователя", id);
+        User user = userService.getUserById(id);
+        log.info("отправлен ответ на GET /users/{id} запрос с телом: {}", id, user);
+        return user;
     }
 
     /**
@@ -53,8 +59,10 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User addUser(@RequestBody User user) {
-        log.info("USER to add: " + user);
-        return userService.addUser(user);
+        log.info("пришел запрос POST /users на добавление пользователя");
+        user = userService.addUser(user);
+        log.info("отправлен ответ на POST /users запрос с телом {}", user);
+        return user;
     }
 
     /**
@@ -66,8 +74,10 @@ public class UserController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public User updateUser(@RequestBody User user) {
-        log.info("USER to update: " + user);
-        return userService.updateUser(user);
+        log.info("пришел запрос PUT /users на обновление пользователя");
+        user = userService.updateUser(user);
+        log.info("отправлен ответ на PUT /users запрос с телом: {}", user);
+        return user;
     }
 
     /**
@@ -78,7 +88,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public User deleteUser(@PathVariable int id) {
-        return userService.removeUser(id);
+        log.info("пришел запрос DELETE /users/{}", id);
+        User user = userService.removeUser(id);
+        log.info("отправлен ответ на DELETE /users/{} запрос с телом: {}", id, user);
+        return user;
     }
 
     /**
@@ -92,10 +105,11 @@ public class UserController {
      */
     @PutMapping("{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public User addFriend(
-            @PathVariable int id,
-            @PathVariable int friendId) throws UserFriendException, ElementNotFoundException {
-        return userService.addFriend(id, friendId);
+    public User addFriend(@PathVariable int id, @PathVariable int friendId) {
+        log.info("пришел запрос PUT /users/{id}/friends/{friendId} на добавление друга", id, friendId);
+        User user = userService.addFriend(id, friendId);
+        log.info("отправлен ответ на PUT /users/{id}/friends/friendId} запрос с телом: {}", id, friendId, user);
+        return user;
     }
 
     /**
@@ -109,10 +123,11 @@ public class UserController {
      */
     @DeleteMapping("{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public User deleteFriend(
-            @PathVariable int id,
-            @PathVariable int friendId) {
-        return userService.removeFriend(id, friendId);
+    public User deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        log.info("пришел запрос DELETE /users/{id}/friends/{friendId} на удаление из друзей", id, friendId);
+        User user = userService.removeFriend(id, friendId);
+        log.info("отправлен ответ на DELETE /users/{id}/friends/{friendId} запрос с телом: {}", user);
+        return user;
     }
 
     /**
@@ -124,7 +139,10 @@ public class UserController {
     @GetMapping("{id}/friends")
     @ResponseStatus(HttpStatus.OK)
     public List<User> getFriends(@PathVariable int id) {
-        return userService.getListOfFriends(id);
+        log.info("пришел запрос GET /users/{id}/friends на получение списка друзей", id);
+        List<User> friends = userService.getListOfFriends(id);
+        log.info("отправлен ответ на GET /users/{id}/friends запрос с телом: {}", friends);
+        return friends;
     }
 
     /**
@@ -137,10 +155,11 @@ public class UserController {
      */
     @GetMapping("{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public User getFriend(
-            @PathVariable int id,
-            @PathVariable int friendId) {
-        return userService.getFriendById(id, friendId);
+    public User getFriend(@PathVariable int id, @PathVariable int friendId) {
+        log.info("пришел запрос GET /users/{id}/friends/{friendId} на получение друга", id, friendId);
+        User user = userService.getFriendById(id, friendId);
+        log.info("отправлен ответ на GET /users/{id}/friends/{friendId} запрос с телом: {}", user);
+        return user;
     }
 
     /**
@@ -152,9 +171,11 @@ public class UserController {
      */
     @GetMapping("{id}/friends/common/{otherId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getCommonFriends(
-            @PathVariable int id,
-            @PathVariable int otherId) {
-        return userService.getListOfCommonsFriends(id, otherId);
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        log.info("пришел запрос GET /users/{id}/friends/common/{otherId} - получение списка общих друзей", id, otherId);
+        List<User> commonFriends = userService.getListOfCommonsFriends(id, otherId);
+        log.info("отправлен ответ на GET /users/{id}/friends/common/{otherId} запрос с телом: {}",
+                id, otherId, commonFriends);
+        return commonFriends;
     }
 }

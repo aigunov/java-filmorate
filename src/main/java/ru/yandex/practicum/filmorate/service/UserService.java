@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserFriendException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.users_logic.interfaces.FriendshipStorage;
-import ru.yandex.practicum.filmorate.storage.users_logic.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.storage.users.interfaces.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.users.interfaces.UserStorage;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.List;

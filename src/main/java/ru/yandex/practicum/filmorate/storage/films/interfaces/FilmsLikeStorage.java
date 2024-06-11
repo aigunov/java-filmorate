@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.films_logic.interfaces;
+package ru.yandex.practicum.filmorate.storage.films.interfaces;
 
 public interface FilmsLikeStorage {
 

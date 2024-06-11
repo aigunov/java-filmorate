@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.MPA;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.MPAStorage;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.MPAStorage;
 
 import java.util.Collection;
 import java.util.List;

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +8,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.users_logic.FriendshipDB;
-import ru.yandex.practicum.filmorate.storage.users_logic.UserDB;
-import ru.yandex.practicum.filmorate.storage.users_logic.interfaces.FriendshipStorage;
-import ru.yandex.practicum.filmorate.storage.users_logic.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.storage.users.FriendshipDB;
+import ru.yandex.practicum.filmorate.storage.users.UserDB;
+import ru.yandex.practicum.filmorate.storage.users.interfaces.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.users.interfaces.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,12 +19,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JdbcTest
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+//@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserDBTest {
 
     private final JdbcTemplate jdbcTemplate;
     private User user;
+
+    @Autowired
+    public UserDBTest(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
 
     @BeforeEach

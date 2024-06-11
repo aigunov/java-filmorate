@@ -1,9 +1,9 @@
-package ru.yandex.practicum.filmorate.storage.films_logic;
+package ru.yandex.practicum.filmorate.storage.films;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmsLikeStorage;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.FilmsLikeStorage;
 
 @Repository("filmslikeDB")
 public class FilmsLikeDB implements FilmsLikeStorage {

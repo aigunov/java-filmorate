@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.films_logic;
+package ru.yandex.practicum.filmorate.storage.films;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MPA;
-import ru.yandex.practicum.filmorate.storage.films_logic.interfaces.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.films.interfaces.FilmStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +23,10 @@ public class FilmDB implements FilmStorage {
         this.jdbc = jdbc;
     }
 
+    /**
+     * @param film для сохранения в бд
+     * @return сохраненный фильм с ID
+     */
     @Override
     public Film addFilm(Film film) {
         Map<String, Object> columns = new SimpleJdbcInsert(this.jdbc)
@@ -44,6 +48,10 @@ public class FilmDB implements FilmStorage {
         return film;
     }
 
+    /**
+     * @param id удаляемого фильма из бд
+     * @return удаляемый фильм из бд
+     */
     @Override
     public Film deleteFilmById(int id) {
         Film deletedFilm = getFilmById(id).get();
@@ -52,6 +60,10 @@ public class FilmDB implements FilmStorage {
         return deletedFilm;
     }
 
+    /**
+     * @param film который надо обновить в бд
+     * @return обновленный фильм из бд
+     */
     @Override
     public Film updateFilm(Film film) {
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?," +
@@ -62,6 +74,10 @@ public class FilmDB implements FilmStorage {
         return film;
     }
 
+    /**
+     * @param id возвращаяемого из бд фильма
+     * @return Optional<> с извлекаемым фильмом из бд
+     */
     @Override
     public Optional<Film> getFilmById(int id) {
         return jdbc.query("""
@@ -73,12 +89,18 @@ public class FilmDB implements FilmStorage {
                 this::mapRowToFilm).stream().findFirst();
     }
 
+    /**
+     * @return список всех фильмов в бд
+     */
     @Override
     public List<Film> getFilms() {
         return jdbc.query("SELECT f.*, mpa.rating_id AS mpa_id, mpa.rating AS mpa_name FROM films AS f " +
                 "INNER JOIN mpa ON f.rating_id = mpa.rating_id", this::mapRowToFilm);
     }
 
+    /**
+     * @return список топ самых популярных фильмов длинной size
+     */
     @Override
     public List<Film> getPopularFilms(int size) {
         return jdbc.query("""
@@ -92,6 +114,13 @@ public class FilmDB implements FilmStorage {
     }
 
 
+    /**
+     * Метод маппает сырой ответ от бд в объект класса Film
+     *
+     * @param rs - сырой ответ от бд
+     * @return Фильм извлеченный из бд
+     * @throws SQLException
+     */
     private Film mapRowToFilm(ResultSet rs, int i) throws SQLException {
         return Film.builder()
                 .id(rs.getInt("id"))
