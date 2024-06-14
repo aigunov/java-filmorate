@@ -6,22 +6,24 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserFriendException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.users.interfaces.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.users.interfaces.UserStorage;
+import ru.yandex.practicum.filmorate.validator.Validator;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final UserStorage userDB;
+    private final FriendshipStorage friendshipDB;
 
-    @Autowired //если одна переменная для внедрения зависимости не легче ли просто к переменной поставить аннотацию?
-    public UserService(InMemoryUserStorage userStorage) {
-        this.userStorage = userStorage;
+    @Autowired
+    public UserService(UserStorage userDB, FriendshipStorage friendshipDB) {
+        this.userDB = userDB;
+        this.friendshipDB = friendshipDB;
     }
 
     /**
@@ -34,17 +36,12 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public User addFriend(Integer userId, Integer friendId) {
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
-        checkIfUserNotExist(user);
-        checkIfUserNotExist(friend);
-        if (user.getFriends().contains(friendId)) {
-            log.error("user cannot add another user to the friends list again");
-            throw new UserFriendException(String.format("user with id={} is already friend", friendId));
-        }
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-        log.error(String.format("user has just added the user with id={} as a friend", friendId));
+        User user = userDB.getUser(userId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
+        User friend = userDB.getUser(friendId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
+        friendshipDB.addFriend(userId, friendId);
+        log.info("Пользователи :" + user.getName() + " и " + friend.getName() + " - подружились");
         return friend;
     }
 
@@ -58,17 +55,12 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public User removeFriend(Integer userId, Integer friendId) {
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
-        checkIfUserNotExist(user);
-        checkIfUserNotExist(friend);
-        if (!user.getFriends().contains(friendId)) {
-            log.error("user cannot remove user with id= {} from the friends list", friendId);
-            throw new UserFriendException(String.format("user with id={} is not a friend", friendId));
-        }
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
-        log.info(String.format("client has just removed the %s user", friend.getName()));
+        User user = userDB.getUser(userId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
+        User friend = userDB.getUser(friendId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
+        friendshipDB.deleteFriend(userId, friendId);
+        log.info("Пользователи:" + user.getName() + " и " + friend.getName() + " - прекратили дружбу!");
         return friend;
     }
 
@@ -78,21 +70,28 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public List<User> getListOfFriends(Integer id) {
-        User user = userStorage.getUserById(id);
-        checkIfUserNotExist(user);
-        log.info("user has just got the list of his friends");
-        return user.getFriends().stream().map(userStorage::getUserById).collect(Collectors.toList());
+        User user = userDB.getUser(id)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + id + " не найден"));
+        List<User> friends = friendshipDB.getUserFriend(id);
+        log.info("Пользователь {} получил список всех своих друзей", user.getName());
+        return friends;
     }
 
     /**
-     * @param id       of the user of the subject
+     * @param userId   of the user of the subject
      * @param friendId of the user of the object
      * @throws ElementNotFoundException
      */
-    public User getFriendById(Integer id, Integer friendId) {
-        User user = userStorage.getUserById(id);
-        checkIfUserNotExist(user);
-        return userStorage.getUserById(user.getFriends().get(friendId));
+    public User getFriendById(Integer userId, Integer friendId) {
+        User user = userDB.getUser(userId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + userId + " не найден"));
+        User friend = userDB.getUser(friendId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + friendId + " не найден"));
+        if (!user.getFriends().contains(friendId)) {
+            throw new UserFriendException(String.format("Пользователь {} не дружит с пользователем {}", user, friend));
+        }
+        log.info("Пользователь {} получил информацию о друге-пользователе {}", user.getName(), friend.getName());
+        return friend;
     }
 
     /**
@@ -103,49 +102,48 @@ public class UserService {
      * @throws ElementNotFoundException
      */
     public List<User> getListOfCommonsFriends(Integer id, Integer otherId) {
-        User user = userStorage.getUserById(id);
-        User friend = userStorage.getUserById(otherId);
-        checkIfUserNotExist(user);
-        checkIfUserNotExist(friend);
-        if (!user.getFriends().isEmpty() && !friend.getFriends().isEmpty()) {
-            log.info(String.format("user going to get the list of common friends of user with id={}", otherId));
-            return userStorage.getUsers().stream()
-                    .filter(user1 -> (user1.getFriends().contains(user.getId()) && user1.getFriends().contains(friend.getId())) &&
-                            (!user1.equals(user.getId()) && !user1.equals(friend.getId()))).collect(Collectors.toList());
-        } else {
-            return new ArrayList<User>();
-        }
-
+        User user1 = userDB.getUser(id)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с ID: " + id + " не найден"));
+        User user2 = userDB.getUser(otherId)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь c ID: " + otherId + " не найден"));
+        List<User> mutualFriends = friendshipDB.getMutualFriend(id, otherId);
+        log.info("Запрос на получение списка общих друзей для пользователей обработан");
+        return mutualFriends;
     }
 
     public User getUserById(Integer id) {
-        checkIfUserNotExist(userStorage.getUserById(id));
-        return userStorage.getUserById(id);
-
+        User user = userDB.getUser(id)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с id = " + id + " не найден"));
+        log.info("Обработан запрос по поиску пользователя. Найден пользователь: {}", user);
+        return user;
     }
 
     public User addUser(User user) {
-        return userStorage.addUser(user);
+        Validator.userValidation(user);
+        user.setId(userDB.addUser(user).getId());
+        log.info("Пользователь {} добавлен в базу", user.getName());
+        return user;
     }
 
     public User updateUser(User user) {
-        return userStorage.updateUser(user);
+        User oldUser = userDB.getUser(user.getId())
+                .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
+
+        log.info("Обновлен пользователь: {}", user);
+        return userDB.updateUser(user);
     }
 
     public User removeUser(Integer id) {
-        checkIfUserNotExist(userStorage.getUserById(id));
-        return userStorage.deleteUserById(id);
+        User user = userDB.getUser(id)
+                .orElseThrow(() -> new NoSuchElementException("Пользователь с id = " + id + " не найден"));
+        log.info("Пользователь {} удален", user.getName());
+        return userDB.deleteUser(id);
     }
 
     public List<User> getUsers() {
-        return userStorage.getUsers();
-    }
-
-    public void checkIfUserNotExist(User user) throws ElementNotFoundException {
-        if (user == null) {
-            log.error("this user is not exist to return, probably the path variables incorrect");
-            throw new ElementNotFoundException("the user is not exist");
-        }
+        List<User> allUsers = userDB.getAllUsers();
+        log.info("Запрос на получение всех пользователей обработан");
+        return allUsers;
     }
 
 }

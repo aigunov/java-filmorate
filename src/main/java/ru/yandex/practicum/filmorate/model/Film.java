@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -18,17 +17,22 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(of = "id")
 @Builder
+@NoArgsConstructor
 public class Film {
     @NotBlank(message = "The movie name cannot be empty")
-    private final String name;
+    private String name;
     @NotBlank(message = "У фильма должно быть описание")
-    private final String description;
-    private final LocalDate releaseDate;
+    private String description;
+    private LocalDate releaseDate;
     @Positive
-    private final int duration;
-    private final Set<Integer> likesId = new HashSet<>();
+    private int duration;
+    private Set<Integer> likesId;
+    @Valid
+    @NotNull
+    private LinkedHashSet<Genre> genres = new LinkedHashSet<>();
+    @Valid
+    private MPA mpa;
     private Integer id;
     private int rate;
-
 
 }

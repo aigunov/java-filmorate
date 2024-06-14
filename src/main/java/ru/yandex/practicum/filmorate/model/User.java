@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +16,24 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
-@Builder
+@Valid
+@Builder(toBuilder = true)
 public class User {
     @ToString.Exclude
     private final List<Integer> friends = new ArrayList<>();
     @ToString.Exclude
     private final List<Integer> likedFilms = new ArrayList<>();
-    private Integer id;
+    private int id;
     @NonNull
     @Email(message = "Invalid email format")
+    @NotNull
     private String email;
     @NotNull
-    @Pattern(regexp = "^[^\\s]+$", message = "The login must not contain spaces")
     private String login;
     private String name = "";
     @PastOrPresent(message = "This date has not been yet")
     @NonNull
     private LocalDate birthday;
+
+
 }

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ElementNotFoundException;
@@ -19,14 +19,11 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
 
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     /**
      * @return List of all films
@@ -34,7 +31,10 @@ public class FilmController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Film> getFilms() {
-        return filmService.getFilms();
+        log.info("пришел GET запрос /films на извлечения списка всех фильмов");
+        List<Film> films = filmService.getFilms();
+        log.info("отправлен ответ на GET запрос /films: {}", films);
+        return films;
     }
 
 
@@ -46,7 +46,10 @@ public class FilmController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Film getFilm(@PathVariable int id) {
-        return filmService.getFilmById(id);
+        log.info("пришел GET запрос /films/{id} на получение фильма", id);
+        Film film = filmService.getFilmById(id);
+        log.info("отправлен ответ на GET запрос /films/{id} с телом: {}", id, film);
+        return film;
     }
 
     /**
@@ -57,7 +60,10 @@ public class FilmController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Film addFilm(@Valid @RequestBody Film film) {
-        return filmService.addNewFilm(film);
+        log.info("пришел запрос POST /films на добавление фильма с телом: {}", film);
+        film = filmService.addNewFilm(film);
+        log.info("отправлен ответ на POST /films запрос на добавление фильма");
+        return film;
     }
 
     /**
@@ -68,7 +74,10 @@ public class FilmController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public Film updateFilm(@Valid @RequestBody Film film) {
-        return filmService.updateFilm(film);
+        log.info("пришел запрос PUT /films на обновление фильма");
+        film = filmService.updateFilm(film);
+        log.info("отправлен ответ на PUT /films с телом: {}", film);
+        return film;
     }
 
     /**
@@ -79,7 +88,10 @@ public class FilmController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Film deleteFilm(@PathVariable int id) {
-        return filmService.removeFilm(id);
+        log.info("пришел запрос DELETE /films/{id} на удаление фильма", id);
+        Film film = filmService.removeFilm(id);
+        log.info("отправлен запрос DELETE /films/{}: {}", id, film);
+        return film;
     }
 
     /**
@@ -91,8 +103,10 @@ public class FilmController {
      */
     @PutMapping("{id}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public Film putLike(@PathVariable int id, @PathVariable int userId) {
-        return filmService.putLike(id, userId);
+    public void putLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("пришел запрос PUT /films/{id}/like/{userId} - поставить лайк", id, userId);
+        filmService.putLike(id, userId);
+        log.info("отправлен ответ на PUT /films/{id}/like/{userId} запрос");
     }
 
     /**
@@ -104,8 +118,10 @@ public class FilmController {
      */
     @DeleteMapping("{id}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public Film removeLike(@PathVariable int id, @PathVariable int userId) {
-        return filmService.removeLike(id, userId);
+    public void removeLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("пришел запрос DELETE /films/{id}/like/{userId} - убрать лайку", id, userId);
+        filmService.removeLike(id, userId);
+        log.info("отправлен ответ на DELETE /films/{id}/like/{userId} запрос", id, userId);
     }
 
     /**
@@ -115,6 +131,9 @@ public class FilmController {
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getTopPopularFilms(count);
+        log.info("пришел запрос GET /films/popular?{count} на получение списка популярных фильмов", count);
+        List<Film> films = filmService.getTopPopularFilms(count);
+        log.info("отправлен ответ на GET /films/popular запрос");
+        return films;
     }
 }
